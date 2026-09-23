@@ -1,27 +1,39 @@
 import './Login.css';
 import { useState ,type FormEvent  } from 'react';
-
+import axios from'axios';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (email === '') {
-  console.log('Email is empty');
+  setEmailError('Email is required');
 return}
   if (password === '') {
-    console.log('Password is empty');
+  setPasswordError('Password is required');
     return;
   
 }
-  console.log(email);
-    console.log(password);
+ if (!emailPattern.test(email)) {
+    setEmailError('Please enter a valid email');
+    return;
+  }
+
+
+try{
+  const response = await axios.post('http://localhost:5000/api/auth/login', 
+    { email, password });
+  console.log(response.data);
 }
-
-
+ catch (error){
+  console.error(error);
+};}
 
 
 
@@ -41,8 +53,11 @@ return}
             type="email"
             placeholder="Email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+            onChange={(e) => {setEmail(e.target.value);
+              setEmailError('');
+            }}
+            
+          />{emailError}
 
           <label htmlFor="password">Password</label>
           <input
@@ -50,8 +65,11 @@ return}
             type="password"
             placeholder="Password"
              value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {setPassword(e.target.value);
+              setPasswordError('');
+            }}
           />
+          {passwordError}
 
           <button type="submit">Login</button>
         </form>
