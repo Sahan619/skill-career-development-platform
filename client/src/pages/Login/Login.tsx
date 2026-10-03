@@ -1,8 +1,10 @@
 import './Login.css';
 import { useState ,type FormEvent  } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from'axios';
 
 const Login = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
@@ -10,30 +12,48 @@ const Login = () => {
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault();
-    if (email === '') {
-  setEmailError('Email is required');
-return}
-  if (password === '') {
-  setPasswordError('Password is required');
+async function handleSubmit(e: FormEvent) {
+  e.preventDefault();
+
+  if (email === '') {
+    setEmailError('Email is required');
     return;
-  
-}
- if (!emailPattern.test(email)) {
+  }
+
+  if (password === '') {
+    setPasswordError('Password is required');
+    return;
+  }
+
+  if (!emailPattern.test(email)) {
     setEmailError('Please enter a valid email');
     return;
   }
 
+  try {
+    const response = await axios.post(
+      'http://localhost:5000/api/auth/login',
+      {
+        email,
+        password,
+      }
+    );
 
-try{
-  const response = await axios.post('http://localhost:5000/api/auth/login', 
-    { email, password });
-  console.log(response.data);
+    localStorage.setItem('token', response.data.token);
+    localStorage.setItem(
+      'user',
+      JSON.stringify(response.data.user)
+    );
+
+    navigate('/dashboard');
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error(error.response?.data?.message);
+    } else {
+      console.error(error);
+    }
+  }
 }
- catch (error){
-  console.error(error);
-};}
 
 
 
