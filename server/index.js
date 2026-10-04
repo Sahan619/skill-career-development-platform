@@ -5,6 +5,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const authMiddleware = require('./middleware/authMiddleware');
 const Skill = require('./models/Skill');
+const Progress = require('./models/Progress');
+const CareerPath = require('./models/CareerPath');
 
 
 const connectDB = require('./config/db');
@@ -295,6 +297,224 @@ app.delete('/api/skills/:id', authMiddleware, async (req, res) => {
 
     res.json({
       message: 'Skill deleted successfully',
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: 'Server error',
+    });
+  }
+});
+
+// CREATE PROGRESS
+app.post('/api/progress', authMiddleware, async (req, res) => {
+  try {
+    const { skillId, progress } = req.body;
+
+    if (!skillId || progress === undefined) {
+      return res.status(400).json({
+        message: 'Skill and progress are required',
+      });
+    }
+
+    if (progress < 0 || progress > 100) {
+      return res.status(400).json({
+        message: 'Progress must be between 0 and 100',
+      });
+    }
+
+    const skill = await Skill.findOne({
+      _id: skillId,
+      user: req.userId,
+    });
+
+    if (!skill) {
+      return res.status(404).json({
+        message: 'Skill not found',
+      });
+    }
+
+    const existingProgress = await Progress.findOne({
+      user: req.userId,
+      skill: skillId,
+    });
+
+    if (existingProgress) {
+      return res.status(400).json({
+        message: 'Progress already exists for this skill',
+      });
+    }
+
+    const newProgress = await Progress.create({
+      user: req.userId,
+      skill: skillId,
+      progress,
+    });
+
+    res.status(201).json(newProgress);
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: 'Server error',
+    });
+  }
+});
+
+
+// GET PROGRESS
+app.get('/api/progress', authMiddleware, async (req, res) => {
+  try {
+    const progress = await Progress.find({
+      user: req.userId,
+    })
+      .populate('skill', 'name category level')
+      .sort({ createdAt: -1 });
+
+    res.json(progress);
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: 'Server error',
+    });
+  }
+});
+
+
+// UPDATE PROGRESS
+app.put('/api/progress/:id', authMiddleware, async (req, res) => {
+  try {
+    const { progress } = req.body;
+
+    if (progress === undefined || progress < 0 || progress > 100) {
+      return res.status(400).json({
+        message: 'Progress must be between 0 and 100',
+      });
+    }
+
+    const existingProgress = await Progress.findOne({
+      _id: req.params.id,
+      user: req.userId,
+    });
+
+    if (!existingProgress) {
+      return res.status(404).json({
+        message: 'Progress not found',
+      });
+    }
+
+    existingProgress.progress = progress;
+
+    await existingProgress.save();
+
+    res.json(existingProgress);
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: 'Server error',
+    });
+  }
+});
+
+
+// DELETE PROGRESS
+app.delete('/api/progress/:id', authMiddleware, async (req, res) => {
+  try {
+    const progress = await Progress.findOneAndDelete({
+      _id: req.params.id,
+      user: req.userId,
+    });
+
+    if (!progress) {
+      return res.status(404).json({
+        message: 'Progress not found',
+      });
+    }
+
+    res.json({
+      message: 'Progress deleted successfully',
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: 'Server error',
+    });
+  }
+});
+
+// GET CAREER PATHS
+app.get('/api/career-paths', authMiddleware, async (req, res) => {
+  try {
+    const careerPaths = await CareerPath.find().sort({ createdAt: -1 });
+
+    res.json(careerPaths);
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: 'Server error',
+    });
+  }
+});
+
+// CREATE CAREER PATH
+// ADD SAMPLE CAREER PATHS
+app.post('/api/career-paths/seed', authMiddleware, async (req, res) => {
+  try {
+    const existingPaths = await CareerPath.countDocuments();
+
+    if (existingPaths > 0) {
+      return res.json({
+        message: 'Career paths already exist',
+      });
+    }
+
+    await CareerPath.insertMany([
+      {
+        title: 'AI Engineer',
+        description: 'Build and deploy artificial intelligence and machine learning systems.',
+        skills: [
+          'Python',
+          'NumPy',
+          'Pandas',
+          'Machine Learning',
+          'Deep Learning',
+          'NLP',
+          'LLMs',
+        ],
+      },
+      {
+        title: 'Software Engineer',
+        description: 'Design, develop, test, and maintain software applications.',
+        skills: [
+          'Programming',
+          'Data Structures',
+          'Algorithms',
+          'Git',
+          'Databases',
+          'APIs',
+        ],
+      },
+      {
+        title: 'Data Scientist',
+        description: 'Analyze data and build models to support data-driven decisions.',
+        skills: [
+          'Python',
+          'Statistics',
+          'NumPy',
+          'Pandas',
+          'Machine Learning',
+          'Data Visualization',
+        ],
+      },
+    ]);
+
+    res.status(201).json({
+      message: 'Career paths created successfully',
     });
   } catch (error) {
     console.error(error);

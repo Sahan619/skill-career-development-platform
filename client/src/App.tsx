@@ -8,6 +8,7 @@ import Dashboard from './pages/Dashboard/Dashboard';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import Profile from './pages/Profile/Profile';
 import Skills from './pages/Skills/Skills';
+import Progress from './pages/Progress/Progress';
 
 
 
@@ -27,6 +28,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/skills" element={<Skills />} />
+          <Route path="/progress" element={<Progress />} />
           </Route>
          
       </Routes>
