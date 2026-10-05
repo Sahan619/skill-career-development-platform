@@ -57,6 +57,32 @@ const Dashboard = () => {
     <div>
       <h1>Dashboard</h1>
 
+      <nav>
+  <button onClick={() => navigate('/dashboard')}>
+    Dashboard
+  </button>
+
+  <button onClick={() => navigate('/profile')}>
+    Profile
+  </button>
+
+  <button onClick={() => navigate('/skills')}>
+    Skills
+  </button>
+
+  <button onClick={() => navigate('/progress')}>
+    Progress
+  </button>
+
+  <button onClick={() => navigate('/career-paths')}>
+    Career Paths
+  </button>
+
+  <button onClick={() => navigate('/roadmap')}>
+  Roadmap
+</button>
+</nav>
+
       {user && (
         <div>
           <h2>Welcome, {user.name}!</h2>

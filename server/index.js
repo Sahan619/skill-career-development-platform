@@ -461,69 +461,8 @@ app.get('/api/career-paths', authMiddleware, async (req, res) => {
   }
 });
 
-// CREATE CAREER PATH
-// ADD SAMPLE CAREER PATHS
-app.post('/api/career-paths/seed', authMiddleware, async (req, res) => {
-  try {
-    const existingPaths = await CareerPath.countDocuments();
 
-    if (existingPaths > 0) {
-      return res.json({
-        message: 'Career paths already exist',
-      });
-    }
 
-    await CareerPath.insertMany([
-      {
-        title: 'AI Engineer',
-        description: 'Build and deploy artificial intelligence and machine learning systems.',
-        skills: [
-          'Python',
-          'NumPy',
-          'Pandas',
-          'Machine Learning',
-          'Deep Learning',
-          'NLP',
-          'LLMs',
-        ],
-      },
-      {
-        title: 'Software Engineer',
-        description: 'Design, develop, test, and maintain software applications.',
-        skills: [
-          'Programming',
-          'Data Structures',
-          'Algorithms',
-          'Git',
-          'Databases',
-          'APIs',
-        ],
-      },
-      {
-        title: 'Data Scientist',
-        description: 'Analyze data and build models to support data-driven decisions.',
-        skills: [
-          'Python',
-          'Statistics',
-          'NumPy',
-          'Pandas',
-          'Machine Learning',
-          'Data Visualization',
-        ],
-      },
-    ]);
-
-    res.status(201).json({
-      message: 'Career paths created successfully',
-    });
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      message: 'Server error',
-    });
-  }
-});
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

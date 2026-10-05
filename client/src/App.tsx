@@ -9,6 +9,8 @@ import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import Profile from './pages/Profile/Profile';
 import Skills from './pages/Skills/Skills';
 import Progress from './pages/Progress/Progress';
+import CareerPaths from './pages/CareerPaths/CareerPaths';
+import Roadmap from './pages/Roadmap/Roadmap';
 
 
 
@@ -29,6 +31,8 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/skills" element={<Skills />} />
           <Route path="/progress" element={<Progress />} />
+          <Route path="/career-paths" element={<CareerPaths />} />
+          <Route path="/roadmap" element={<Roadmap />} />
           </Route>
          
       </Routes>
