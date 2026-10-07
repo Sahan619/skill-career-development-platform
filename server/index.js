@@ -7,6 +7,7 @@ const authMiddleware = require('./middleware/authMiddleware');
 const Skill = require('./models/Skill');
 const Progress = require('./models/Progress');
 const CareerPath = require('./models/CareerPath');
+const Project = require('./models/Project');
 
 
 const connectDB = require('./config/db');
@@ -447,11 +448,14 @@ app.delete('/api/progress/:id', authMiddleware, async (req, res) => {
 });
 
 // GET CAREER PATHS
-app.get('/api/career-paths', authMiddleware, async (req, res) => {
+// GET PROJECTS
+app.get('/api/projects', authMiddleware, async (req, res) => {
   try {
-    const careerPaths = await CareerPath.find().sort({ createdAt: -1 });
+    const projects = await Project.find({
+      user: req.userId,
+    }).sort({ createdAt: -1 });
 
-    res.json(careerPaths);
+    res.json(projects);
   } catch (error) {
     console.error(error);
 
@@ -461,8 +465,106 @@ app.get('/api/career-paths', authMiddleware, async (req, res) => {
   }
 });
 
+// CREATE PROJECT
+app.post('/api/projects', authMiddleware, async (req, res) => {
+  try {
+    const {
+      title,
+      description,
+      technologies,
+      github,
+      liveDemo,
+    } = req.body;
 
+    if (!title) {
+      return res.status(400).json({
+        message: 'Project title is required',
+      });
+    }
 
+    const project = await Project.create({
+      user: req.userId,
+      title,
+      description,
+      technologies,
+      github,
+      liveDemo,
+    });
+
+    res.status(201).json(project);
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: 'Server error',
+    });
+  }
+});
+
+// UPDATE PROJECT
+app.put('/api/projects/:id', authMiddleware, async (req, res) => {
+  try {
+    const {
+      title,
+      description,
+      technologies,
+      github,
+      liveDemo,
+    } = req.body;
+
+    const project = await Project.findOne({
+      _id: req.params.id,
+      user: req.userId,
+    });
+
+    if (!project) {
+      return res.status(404).json({
+        message: 'Project not found',
+      });
+    }
+
+    project.title = title;
+    project.description = description;
+    project.technologies = technologies;
+    project.github = github;
+    project.liveDemo = liveDemo;
+
+    await project.save();
+
+    res.json(project);
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: 'Server error',
+    });
+  }
+});
+// DELETE PROJECT
+app.delete('/api/projects/:id', authMiddleware, async (req, res) => {
+  try {
+    const project = await Project.findOneAndDelete({
+      _id: req.params.id,
+      user: req.userId,
+    });
+
+    if (!project) {
+      return res.status(404).json({
+        message: 'Project not found',
+      });
+    }
+
+    res.json({
+      message: 'Project deleted successfully',
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: 'Server error',
+    });
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

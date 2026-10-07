@@ -11,7 +11,8 @@ import Skills from './pages/Skills/Skills';
 import Progress from './pages/Progress/Progress';
 import CareerPaths from './pages/CareerPaths/CareerPaths';
 import Roadmap from './pages/Roadmap/Roadmap';
-
+import Projects from './pages/Projects/Projects';
+import Portfolio from './pages/Portfolio/Portfolio';
 
 
 
@@ -33,6 +34,8 @@ function App() {
           <Route path="/progress" element={<Progress />} />
           <Route path="/career-paths" element={<CareerPaths />} />
           <Route path="/roadmap" element={<Roadmap />} />
+          <Route path="/projects" element={<Projects />} />
+          <Route path="/portfolio" element={<Portfolio />} />
           </Route>
          
       </Routes>

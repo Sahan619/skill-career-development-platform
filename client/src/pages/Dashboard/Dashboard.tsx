@@ -81,6 +81,12 @@ const Dashboard = () => {
   <button onClick={() => navigate('/roadmap')}>
   Roadmap
 </button>
+<button onClick={() => navigate('/projects')}>
+  Projects
+</button>
+<button onClick={() => navigate('/portfolio')}>
+  Portfolio
+</button>
 </nav>
 
       {user && (
