@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import './CareerPaths.css';
 
 interface CareerPath {
   _id: string;
@@ -10,7 +11,7 @@ interface CareerPath {
 }
 
 const CareerPaths = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   const [careerPaths, setCareerPaths] = useState<CareerPath[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -40,42 +41,83 @@ const CareerPaths = () => {
   }, []);
 
   if (loading) {
-    return <p>Loading career paths...</p>;
+    return <p className="career-loading">Loading career paths...</p>;
   }
 
   return (
-    <div>
-      <h1>Career Paths</h1>
+    <main className="career-page">
+      <header className="career-page-header">
+        <div>
+          <p className="career-eyebrow">PLAN YOUR FUTURE</p>
+          <h1>Explore Career Paths</h1>
+          <p>
+            Discover career options, identify essential skills, and plan your
+            next learning steps.
+          </p>
+        </div>
+
+        <div className="career-count">
+          <strong>{careerPaths.length}</strong>
+          <span>Career paths</span>
+        </div>
+      </header>
 
       {careerPaths.length === 0 ? (
-        <p>No career paths available.</p>
+        <section className="career-empty-state">
+          <h2>No career paths available yet</h2>
+          <p>Career paths will appear here when they are available.</p>
+        </section>
       ) : (
-        careerPaths.map((careerPath) => (
-          <div key={careerPath._id}>
-            <h2>{careerPath.title}</h2>
+        <section className="career-grid">
+          {careerPaths.map((careerPath, index) => (
+            <article className="career-card" key={careerPath._id}>
+              <div className="career-card-top">
+                <div className="career-icon">
+                  {careerPath.title.charAt(0).toUpperCase()}
+                </div>
+                <span className="career-card-number">
+                  PATH {String(index + 1).padStart(2, '0')}
+                </span>
+              </div>
 
-            <p>{careerPath.description}</p>
+              <h2>{careerPath.title}</h2>
+              <p className="career-description">
+                {careerPath.description}
+              </p>
 
-            <h3>Required Skills</h3>
+              <div className="career-skills-section">
+                <h3>Skills to develop</h3>
 
-            <ul>
-                <button
-  onClick={() =>
-    navigate('/roadmap', {
-      state: careerPath,
-    })
-  }
->
-  View Roadmap
-</button>
-              {careerPath.skills.map((skill) => (
-                <li key={skill}>{skill}</li>
-              ))}
-            </ul>
-          </div>
-        ))
+                {careerPath.skills.length > 0 ? (
+                  <div className="career-skill-tags">
+                    {careerPath.skills.map((skill) => (
+                      <span className="career-skill-tag" key={skill}>
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="career-no-skills">
+                    No skills listed for this path yet.
+                  </p>
+                )}
+              </div>
+
+              <button
+                className="career-roadmap-button"
+                onClick={() =>
+                  navigate('/roadmap', {
+                    state: careerPath,
+                  })
+                }
+              >
+                View Roadmap <span aria-hidden="true">→</span>
+              </button>
+            </article>
+          ))}
+        </section>
       )}
-    </div>
+    </main>
   );
 };
 

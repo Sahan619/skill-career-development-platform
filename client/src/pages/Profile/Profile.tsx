@@ -1,6 +1,7 @@
+
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-
+import './Profile.css';
 
 interface User {
   name: string;
@@ -14,10 +15,12 @@ interface User {
 }
 
 const Profile = () => {
- const [user, setUser] = useState<User | null>(null);
- const [loading, setLoading] = useState(true); 
- const [editing, setEditing] = useState(false);
- const [saving, setSaving] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [originalUser, setOriginalUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -34,8 +37,10 @@ const Profile = () => {
         );
 
         setUser(response.data);
+        setOriginalUser(response.data);
       } catch (error) {
         console.error('Failed to load profile:', error);
+        setError('Could not load your profile. Please try again.');
       } finally {
         setLoading(false);
       }
@@ -45,200 +50,305 @@ const Profile = () => {
   }, []);
 
   const handleSave = async () => {
-  if (!user) return;
+    if (!user) return;
 
-  try {
-    setSaving(true);
+    try {
+      setSaving(true);
+      setError('');
 
-    const token = localStorage.getItem('token');
+      const token = localStorage.getItem('token');
 
-    const response = await axios.put(
-      'http://localhost:5000/api/profile',
-      user,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+      const response = await axios.put(
+        'http://localhost:5000/api/profile',
+        user,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-    setUser(response.data.user);
+      setUser(response.data.user);
+      setOriginalUser(response.data.user);
+      setEditing(false);
+
+      localStorage.setItem(
+        'user',
+        JSON.stringify(response.data.user)
+      );
+    } catch (error) {
+      console.error('Failed to update profile:', error);
+      setError('Could not save your changes. Please try again.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setUser(originalUser);
     setEditing(false);
-
-    localStorage.setItem(
-      'user',
-      JSON.stringify(response.data.user)
-    );
-  } catch (error) {
-    console.error('Failed to update profile:', error);
-  } finally {
-    setSaving(false);
-  }
-};
+    setError('');
+  };
 
   if (loading) {
-    return <p>Loading profile...</p>;
+    return (
+      <div className="profile-page">
+        <p className="profile-message">Loading profile...</p>
+      </div>
+    );
   }
 
   if (!user) {
-    return <p>Failed to load profile.</p>;
+    return (
+      <div className="profile-page">
+        <h1>My Profile</h1>
+        <p className="profile-error">
+          {error || 'Failed to load profile.'}
+        </p>
+      </div>
+    );
   }
 
- 
-    
-return (
-  <div>
-    <h1>Profile</h1>
+  const initials = user.name
+    .trim()
+    .split(/\s+/)
+    .map((part) => part[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
 
-    {!editing && (
-      <button onClick={() => setEditing(true)}>
-        Edit Profile
-      </button>
-    )}
-
-    {editing ? (
-      <div>
+  return (
+    <div className="profile-page">
+      <div className="profile-heading">
         <div>
-          <label>Name</label>
-          <input
-            type="text"
-            value={user.name}
-            onChange={(e) =>
-              setUser({ ...user, name: e.target.value })
-            }
-          />
+          <h1>My Profile</h1>
+          <p>Manage your personal and career information.</p>
         </div>
 
-        <div>
-          <label>Email</label>
-          <input
-            type="email"
-            value={user.email}
-            disabled
-          />
-        </div>
-
-        <div>
-          <label>University</label>
-          <input
-            type="text"
-            value={user.university}
-            onChange={(e) =>
-              setUser({ ...user, university: e.target.value })
-            }
-          />
-        </div>
-
-        <div>
-          <label>Degree</label>
-          <input
-            type="text"
-            value={user.degree}
-            onChange={(e) =>
-              setUser({ ...user, degree: e.target.value })
-            }
-          />
-        </div>
-
-        <div>
-          <label>Study Year</label>
-          <input
-            type="number"
-            value={user.studyYear ?? ''}
-            onChange={(e) =>
-              setUser({
-                ...user,
-                studyYear: e.target.value
-                  ? Number(e.target.value)
-                  : null,
-              })
-            }
-          />
-        </div>
-
-        <div>
-          <label>Career Goal</label>
-          <input
-            type="text"
-            value={user.careerGoal}
-            onChange={(e) =>
-              setUser({ ...user, careerGoal: e.target.value })
-            }
-          />
-        </div>
-
-        <div>
-          <label>GitHub</label>
-          <input
-            type="text"
-            value={user.github}
-            onChange={(e) =>
-              setUser({ ...user, github: e.target.value })
-            }
-          />
-        </div>
-
-        <div>
-          <label>LinkedIn</label>
-          <input
-            type="text"
-            value={user.linkedin}
-            onChange={(e) =>
-              setUser({ ...user, linkedin: e.target.value })
-            }
-          />
-        </div>
-
-        <button onClick={handleSave} disabled={saving}>
-          {saving ? 'Saving...' : 'Save Changes'}
-        </button>
-
-        <button onClick={() => setEditing(false)}>
-          Cancel
-        </button>
+        {!editing && (
+          <button onClick={() => setEditing(true)}>
+            Edit Profile
+          </button>
+        )}
       </div>
-    ) : (
-      <div>
-        <p>
-          <strong>Name:</strong> {user.name}
-        </p>
 
-        <p>
-          <strong>Email:</strong> {user.email}
+      {error && (
+        <p className="profile-error" role="alert">
+          {error}
         </p>
+      )}
 
-        <p>
-          <strong>University:</strong>{' '}
-          {user.university || 'Not added'}
-        </p>
+      <section className="profile-card">
+        <div className="profile-banner" />
 
-        <p>
-          <strong>Degree:</strong>{' '}
-          {user.degree || 'Not added'}
-        </p>
+        <div className="profile-identity">
+          <div className="profile-avatar">
+            {initials || '?'}
+          </div>
 
-        <p>
-          <strong>Study Year:</strong>{' '}
-          {user.studyYear || 'Not added'}
-        </p>
+          <div className="profile-identity-info">
+            <h2>{user.name || 'Your Name'}</h2>
+            <p>{user.email}</p>
+            <span className="profile-badge">
+              Student Profile
+            </span>
+          </div>
+        </div>
 
-        <p>
-          <strong>Career Goal:</strong>{' '}
-          {user.careerGoal || 'Not added'}
-        </p>
+        {editing ? (
+          <form
+            className="profile-form"
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSave();
+            }}
+          >
+            <h3>Edit Information</h3>
 
-        <p>
-          <strong>GitHub:</strong>{' '}
-          {user.github || 'Not added'}
-        </p>
+            <div className="profile-form-grid">
+              <div className="profile-field">
+                <label htmlFor="profile-name">Full Name</label>
+                <input
+                  id="profile-name"
+                  type="text"
+                  value={user.name}
+                  onChange={(e) =>
+                    setUser({ ...user, name: e.target.value })
+                  }
+                  required
+                />
+              </div>
 
-        <p>
-          <strong>LinkedIn:</strong>{' '}
-          {user.linkedin || 'Not added'}
-        </p>
-      </div>
-    )}
-  </div>
-);
+              <div className="profile-field">
+                <label htmlFor="profile-email">Email</label>
+                <input
+                  id="profile-email"
+                  type="email"
+                  value={user.email}
+                  disabled
+                />
+              </div>
+
+              <div className="profile-field">
+                <label htmlFor="profile-university">University</label>
+                <input
+                  id="profile-university"
+                  type="text"
+                  value={user.university || ''}
+                  onChange={(e) =>
+                    setUser({ ...user, university: e.target.value })
+                  }
+                />
+              </div>
+
+              <div className="profile-field">
+                <label htmlFor="profile-degree">Degree</label>
+                <input
+                  id="profile-degree"
+                  type="text"
+                  value={user.degree || ''}
+                  onChange={(e) =>
+                    setUser({ ...user, degree: e.target.value })
+                  }
+                />
+              </div>
+
+              <div className="profile-field">
+                <label htmlFor="profile-year">Study Year</label>
+                <input
+                  id="profile-year"
+                  type="number"
+                  min="1"
+                  max="10"
+                  value={user.studyYear ?? ''}
+                  onChange={(e) =>
+                    setUser({
+                      ...user,
+                      studyYear: e.target.value
+                        ? Number(e.target.value)
+                        : null,
+                    })
+                  }
+                />
+              </div>
+
+              <div className="profile-field">
+                <label htmlFor="profile-goal">Career Goal</label>
+                <input
+                  id="profile-goal"
+                  type="text"
+                  value={user.careerGoal || ''}
+                  onChange={(e) =>
+                    setUser({ ...user, careerGoal: e.target.value })
+                  }
+                  placeholder="e.g. Software Engineer"
+                />
+              </div>
+
+              <div className="profile-field">
+                <label htmlFor="profile-github">GitHub URL</label>
+                <input
+                  id="profile-github"
+                  type="url"
+                  value={user.github || ''}
+                  onChange={(e) =>
+                    setUser({ ...user, github: e.target.value })
+                  }
+                  placeholder="https://github.com/username"
+                />
+              </div>
+
+              <div className="profile-field">
+                <label htmlFor="profile-linkedin">LinkedIn URL</label>
+                <input
+                  id="profile-linkedin"
+                  type="url"
+                  value={user.linkedin || ''}
+                  onChange={(e) =>
+                    setUser({ ...user, linkedin: e.target.value })
+                  }
+                  placeholder="https://linkedin.com/in/username"
+                />
+              </div>
+            </div>
+
+            <div className="profile-actions">
+              <button type="submit" disabled={saving}>
+                {saving ? 'Saving...' : 'Save Changes'}
+              </button>
+
+              <button
+                type="button"
+                className="profile-cancel-button"
+                onClick={handleCancel}
+                disabled={saving}
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        ) : (
+          <div className="profile-details">
+            <h3>Personal & Career Information</h3>
+
+            <div className="profile-details-grid">
+              <div className="profile-detail">
+                <span>Full Name</span>
+                <strong>{user.name || 'Not added'}</strong>
+              </div>
+
+              <div className="profile-detail">
+                <span>Email Address</span>
+                <strong>{user.email || 'Not added'}</strong>
+              </div>
+
+              <div className="profile-detail">
+                <span>University</span>
+                <strong>{user.university || 'Not added'}</strong>
+              </div>
+
+              <div className="profile-detail">
+                <span>Degree</span>
+                <strong>{user.degree || 'Not added'}</strong>
+              </div>
+
+              <div className="profile-detail">
+                <span>Study Year</span>
+                <strong>{user.studyYear ?? 'Not added'}</strong>
+              </div>
+
+              <div className="profile-detail">
+                <span>Career Goal</span>
+                <strong>{user.careerGoal || 'Not added'}</strong>
+              </div>
+
+              <div className="profile-detail">
+                <span>GitHub</span>
+                {user.github ? (
+                  <a href={user.github} target="_blank" rel="noopener noreferrer">
+                    View GitHub Profile
+                  </a>
+                ) : (
+                  <strong>Not added</strong>
+                )}
+              </div>
+
+              <div className="profile-detail">
+                <span>LinkedIn</span>
+                {user.linkedin ? (
+                  <a href={user.linkedin} target="_blank" rel="noopener noreferrer">
+                    View LinkedIn Profile
+                  </a>
+                ) : (
+                  <strong>Not added</strong>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </section>
+    </div>
+  );
 };
+
 export default Profile;
