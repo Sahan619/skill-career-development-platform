@@ -12,44 +12,64 @@ const Register = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault();
+  const passwordChecks = {
+  length: password.length >= 8,
+  uppercase: /[A-Z]/.test(password),
+  lowercase: /[a-z]/.test(password),
+  number: /\d/.test(password),
+  special: /[^A-Za-z\d\s]/.test(password),
+   noSpaces: !/\s/.test(password),
+};
 
-    setErrorMessage('');
-    setSuccessMessage('');
+const isPasswordStrong = Object.values(passwordChecks).every(Boolean);
 
-    try {
-      setLoading(true);
+  
+async function handleSubmit(e: FormEvent) {
+  e.preventDefault();
 
-      await axios.post(
-        'http://localhost:5000/api/auth/register',
-        {
-          name: name.trim(),
-          email: email.trim(),
-          password,
-        }
-      );
+  setErrorMessage('');
+  setSuccessMessage('');
 
-      setSuccessMessage(
-        'Your account has been created. You can now sign in.'
-      );
-
-      setName('');
-      setEmail('');
-      setPassword('');
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        setErrorMessage(
-          error.response?.data?.message ||
-            'Registration failed. Please check your details and try again.'
-        );
-      } else {
-        setErrorMessage('Something went wrong. Please try again.');
-      }
-    } finally {
-      setLoading(false);
-    }
+  if (!isPasswordStrong) {
+    setErrorMessage(
+      'Please choose a password that meets all the requirements.'
+    );
+    return;
   }
+
+  try {
+    setLoading(true);
+
+    await axios.post(
+      'http://localhost:5000/api/auth/register',
+      {
+        name: name.trim(),
+        email: email.trim(),
+        password,
+      }
+    );
+
+    setSuccessMessage(
+      'Your account has been created. You can now sign in.'
+    );
+
+    setName('');
+    setEmail('');
+    setPassword('');
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      setErrorMessage(
+        error.response?.data?.message ||
+          'Registration failed. Please check your details and try again.'
+      );
+    } else {
+      setErrorMessage('Something went wrong. Please try again.');
+    }
+  } finally {
+    setLoading(false);
+  }
+}
+
 
   return (
     <main className="register-container">
@@ -103,22 +123,46 @@ const Register = () => {
               />
             </div>
 
-            <div className="register-field">
-              <label htmlFor="register-password">Password</label>
-              <input
-                id="register-password"
-                type="password"
-                placeholder="Create a password"
-                value={password}
-                autoComplete="new-password"
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  setErrorMessage('');
-                  setSuccessMessage('');
-                }}
-                required
-              />
-            </div>
+            
+<div className="register-field">
+  <label htmlFor="register-password">Password</label>
+  <input
+    id="register-password"
+    type="password"
+    placeholder="Create a password"
+    value={password}
+    autoComplete="new-password"
+    onChange={(e) => {
+      setPassword(e.target.value);
+      setErrorMessage('');
+      setSuccessMessage('');
+    }}
+    required
+  />
+
+  <div className="password-requirements">
+    <p>Password must contain:</p>
+    <p className={passwordChecks.length ? 'valid' : ''}>
+      ✓ At least 8 characters
+    </p>
+    <p className={passwordChecks.uppercase ? 'valid' : ''}>
+      ✓ One uppercase letter (A–Z)
+    </p>
+    <p className={passwordChecks.lowercase ? 'valid' : ''}>
+      ✓ One lowercase letter (a–z)
+    </p>
+    <p className={passwordChecks.number ? 'valid' : ''}>
+      ✓ One number (0–9)
+    </p>
+    <p className={passwordChecks.special ? 'valid' : ''}>
+      ✓ One special character (@, #, !)
+    </p>
+    <p className={passwordChecks.noSpaces ? 'valid' : ''}>
+      ✓ No spaces
+    </p>
+  </div>
+</div>
+
 
             {errorMessage && (
               <p className="register-error" role="alert">
@@ -137,7 +181,7 @@ const Register = () => {
             <button
               className="register-submit"
               type="submit"
-              disabled={loading}
+              disabled={loading || !isPasswordStrong}
             >
               {loading ? 'Creating account...' : 'Create Account'}
               {!loading && <span aria-hidden="true">→</span>}

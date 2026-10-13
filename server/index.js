@@ -96,6 +96,17 @@ app.post('/api/auth/register', async (req, res) => {
         message: 'All fields are required',
       });
     }
+    
+const strongPassword =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d\s])\S{8,}$/;
+
+if (!strongPassword.test(password)) {
+  return res.status(400).json({
+    message:
+      'Password must be at least 8 characters and include uppercase, lowercase, a number, and a special character.',
+  });
+}
+
 
     const existingUser = await User.findOne({ email });
 
