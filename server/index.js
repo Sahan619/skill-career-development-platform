@@ -448,6 +448,21 @@ app.delete('/api/progress/:id', authMiddleware, async (req, res) => {
 });
 
 // GET CAREER PATHS
+
+app.get('/api/career-paths', authMiddleware, async (req, res) => {
+  try {
+    const careerPaths = await CareerPath.find();
+    res.json(careerPaths);
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: 'Server error',
+    });
+  }
+});
+
+
 // GET PROJECTS
 app.get('/api/projects', authMiddleware, async (req, res) => {
   try {

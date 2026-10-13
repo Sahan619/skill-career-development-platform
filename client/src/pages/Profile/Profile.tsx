@@ -219,7 +219,7 @@ const Profile = () => {
                   id="profile-year"
                   type="number"
                   min="1"
-                  max="10"
+                  max="4"
                   value={user.studyYear ?? ''}
                   onChange={(e) =>
                     setUser({
