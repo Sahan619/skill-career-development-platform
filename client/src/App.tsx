@@ -13,6 +13,7 @@ import CareerPaths from './pages/CareerPaths/CareerPaths';
 import Roadmap from './pages/Roadmap/Roadmap';
 import Projects from './pages/Projects/Projects';
 import Portfolio from './pages/Portfolio/Portfolio';
+import { Navigate } from 'react-router-dom';
 
 
 
@@ -24,6 +25,7 @@ function App() {
     <>
     <BrowserRouter>
       <Routes>
+        <Route path="/" element={<Navigate to="/login" replace />} />
         
          <Route path="/login" element={<Login />} />
          <Route path="/register" element={<Register />} />
