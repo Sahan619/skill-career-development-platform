@@ -49,9 +49,9 @@ const Portfolio = () => {
 
         const [profileResponse, skillsResponse, projectsResponse] =
           await Promise.all([
-            axios.get('http://localhost:5000/api/profile', { headers }),
-            axios.get('http://localhost:5000/api/skills', { headers }),
-            axios.get('http://localhost:5000/api/projects', { headers }),
+            axios.get(`${import.meta.env.VITE_API_URL}/api/profile`, { headers }),
+            axios.get(`${import.meta.env.VITE_API_URL}/api/skills`, { headers }),
+            axios.get(`${import.meta.env.VITE_API_URL}/api/projects`, { headers }),
           ]);
 
         setProfile(profileResponse.data);

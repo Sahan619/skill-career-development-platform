@@ -28,8 +28,8 @@ const Dashboard = () => {
         };
 
         const [profileResponse, progressResponse] = await Promise.all([
-          axios.get('http://localhost:5000/api/profile', { headers }),
-          axios.get('http://localhost:5000/api/progress', { headers }),
+          axios.get(`${import.meta.env.VITE_API_URL}/api/profile`, { headers }),
+          axios.get(`${import.meta.env.VITE_API_URL}/api/progress`, { headers }),
         ]);
 
         setName(profileResponse.data.name);

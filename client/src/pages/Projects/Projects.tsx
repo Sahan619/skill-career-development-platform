@@ -28,7 +28,7 @@ const Projects = () => {
         const token = localStorage.getItem('token');
 
         const response = await axios.get(
-          'http://localhost:5000/api/projects',
+          `${import.meta.env.VITE_API_URL}/api/projects`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -78,7 +78,7 @@ const Projects = () => {
 
       if (editingId) {
         const response = await axios.put(
-          `http://localhost:5000/api/projects/${editingId}`,
+          `${import.meta.env.VITE_API_URL}/api/projects/${editingId}`,
           projectData,
           { headers }
         );
@@ -90,7 +90,7 @@ const Projects = () => {
         );
       } else {
         const response = await axios.post(
-          'http://localhost:5000/api/projects',
+          `${import.meta.env.VITE_API_URL}/api/projects`,
           projectData,
           { headers }
         );
@@ -131,7 +131,7 @@ const Projects = () => {
     try {
       const token = localStorage.getItem('token');
 
-      await axios.delete(`http://localhost:5000/api/projects/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/api/projects/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

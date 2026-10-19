@@ -35,8 +35,8 @@ const Progress = () => {
         const headers = { Authorization: `Bearer ${token}` };
 
         const [skillsResponse, progressResponse] = await Promise.all([
-          axios.get('http://localhost:5000/api/skills', { headers }),
-          axios.get('http://localhost:5000/api/progress', { headers }),
+          axios.get(`${import.meta.env.VITE_API_URL}/api/skills`, { headers }),
+          axios.get(`${import.meta.env.VITE_API_URL}/api/progress`, { headers }),
         ]);
 
         setSkills(skillsResponse.data);
@@ -61,7 +61,7 @@ const Progress = () => {
       const token = localStorage.getItem('token');
 
       const response = await axios.post(
-        'http://localhost:5000/api/progress',
+        `${import.meta.env.VITE_API_URL}/api/progress`,
         {
           skillId: selectedSkill,
           progress: Number(progress),
@@ -88,7 +88,7 @@ const Progress = () => {
       const token = localStorage.getItem('token');
 
       const response = await axios.put(
-        `http://localhost:5000/api/progress/${id}`,
+        `${import.meta.env.VITE_API_URL}/api/progress/${id}`,
         { progress: value },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -113,7 +113,7 @@ const Progress = () => {
     try {
       const token = localStorage.getItem('token');
 
-      await axios.delete(`http://localhost:5000/api/progress/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/api/progress/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

@@ -21,7 +21,7 @@ const CareerPaths = () => {
         const token = localStorage.getItem('token');
 
         const response = await axios.get(
-          'http://localhost:5000/api/career-paths',
+          `${import.meta.env.VITE_API_URL}/api/career-paths`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

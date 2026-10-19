@@ -31,7 +31,7 @@ const Skills = () => {
         const token = localStorage.getItem('token');
 
         const response = await axios.get(
-          'http://localhost:5000/api/skills',
+          `${import.meta.env.VITE_API_URL}/api/skills`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -60,7 +60,7 @@ const Skills = () => {
       const token = localStorage.getItem('token');
 
       const response = await axios.post(
-        'http://localhost:5000/api/skills',
+        `${import.meta.env.VITE_API_URL}/api/skills`,
         {
           name: name.trim(),
           category: category.trim(),
@@ -104,7 +104,7 @@ const Skills = () => {
       const token = localStorage.getItem('token');
 
       const response = await axios.put(
-        `http://localhost:5000/api/skills/${id}`,
+        `${import.meta.env.VITE_API_URL}/api/skills/${id}`,
         {
           name: editName.trim(),
           category: editCategory.trim(),
@@ -141,7 +141,7 @@ const Skills = () => {
       const token = localStorage.getItem('token');
 
       await axios.delete(
-        `http://localhost:5000/api/skills/${id}`,
+        `${import.meta.env.VITE_API_URL}/api/skills/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

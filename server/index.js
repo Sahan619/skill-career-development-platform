@@ -19,7 +19,7 @@ app.use(cors());
 app.use(express.json());
 connectDB();
 
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 app.get('/', (req, res) => {
   res.send('Skill and Career Development API is running');
@@ -593,5 +593,5 @@ app.delete('/api/projects/:id', authMiddleware, async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
