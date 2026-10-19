@@ -14,7 +14,7 @@ import Roadmap from './pages/Roadmap/Roadmap';
 import Projects from './pages/Projects/Projects';
 import Portfolio from './pages/Portfolio/Portfolio';
 import { Navigate } from 'react-router-dom';
-
+import AuthenticatedLayout from './components/AuthenticatedLayout/AuthenticatedLayout';
 
 
 function App() {
@@ -30,14 +30,16 @@ function App() {
          <Route path="/login" element={<Login />} />
          <Route path="/register" element={<Register />} />
           <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/skills" element={<Skills />} />
-          <Route path="/progress" element={<Progress />} />
-          <Route path="/career-paths" element={<CareerPaths />} />
-          <Route path="/roadmap" element={<Roadmap />} />
-          <Route path="/projects" element={<Projects />} />
-          <Route path="/portfolio" element={<Portfolio />} />
+            <Route element={<AuthenticatedLayout />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/skills" element={<Skills />} />
+              <Route path="/progress" element={<Progress />} />
+              <Route path="/career-paths" element={<CareerPaths />} />
+              <Route path="/roadmap" element={<Roadmap />} />
+              <Route path="/projects" element={<Projects />} />
+              <Route path="/portfolio" element={<Portfolio />} />
+            </Route>
           </Route>
          
       </Routes>

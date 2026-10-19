@@ -54,53 +54,16 @@ const Dashboard = () => {
         )
       : 0;
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    navigate('/login');
-  };
-
   if (loading) {
-    return <p className="dashboard-loading">Loading dashboard...</p>;
+    return (
+      <div className="dashboard-page">
+        <p className="dashboard-loading">Loading dashboard...</p>
+      </div>
+    );
   }
 
   return (
-    <div className="dashboard-layout">
-      <aside className="dashboard-sidebar">
-        <h2 className="dashboard-brand">SkillPath</h2>
-
-        <nav className="dashboard-nav">
-          <button onClick={() => navigate('/dashboard')}>
-            Dashboard
-          </button>
-          <button onClick={() => navigate('/profile')}>
-            Profile
-          </button>
-          <button onClick={() => navigate('/skills')}>
-            Skills
-          </button>
-          <button onClick={() => navigate('/progress')}>
-            Progress
-          </button>
-          <button onClick={() => navigate('/career-paths')}>
-            Career Paths
-          </button>
-          <button onClick={() => navigate('/roadmap')}>
-            Roadmap
-          </button>
-          <button onClick={() => navigate('/projects')}>
-            Projects
-          </button>
-          <button onClick={() => navigate('/portfolio')}>
-            Portfolio
-          </button>
-        </nav>
-
-        <button className="dashboard-logout" onClick={handleLogout}>
-          Log out
-        </button>
-      </aside>
-
-      <main className="dashboard-main">
+    <div className="dashboard-page">
         <header className="dashboard-topbar">
           <div>
             <h1>Dashboard</h1>
@@ -197,7 +160,6 @@ const Dashboard = () => {
             </button>
           </div>
         </section>
-      </main>
     </div>
   );
 };

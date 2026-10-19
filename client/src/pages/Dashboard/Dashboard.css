@@ -1,55 +1,5 @@
 
-.dashboard-layout {
-  display: flex;
-  min-height: 100vh;
-}
-
-.dashboard-sidebar {
-  width: 240px;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-  padding: 28px 18px;
-  background: #172554;
-  color: white;
-}
-
-.dashboard-brand {
-  color: white;
-  margin: 0;
-  padding: 0 10px;
-}
-
-.dashboard-nav {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.dashboard-nav button {
-  text-align: left;
-  background: transparent;
-  color: #dbeafe;
-}
-
-.dashboard-nav button:hover {
-  background: #263b70;
-  color: white;
-}
-
-.dashboard-logout {
-  margin-top: auto;
-  background: #b91c1c;
-}
-
-.dashboard-logout:hover {
-  background: #991b1b;
-}
-
-.dashboard-main {
-  flex: 1;
-  min-width: 0;
+.dashboard-page {
   padding: 32px;
 }
 
@@ -171,26 +121,7 @@
 }
 
 @media (max-width: 850px) {
-  .dashboard-layout {
-    flex-direction: column;
-  }
-
-  .dashboard-sidebar {
-    width: 100%;
-    gap: 18px;
-  }
-
-  .dashboard-nav {
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-
-  .dashboard-logout {
-    margin-top: 0;
-    align-self: flex-start;
-  }
-
-  .dashboard-main {
+  .dashboard-page {
     padding: 22px;
   }
 }
@@ -205,7 +136,7 @@
     flex-direction: column;
   }
 
-  .dashboard-main {
+  .dashboard-page {
     padding: 16px;
   }
 
