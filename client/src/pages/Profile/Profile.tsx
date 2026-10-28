@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import './Profile.css';
 
@@ -12,6 +12,7 @@ interface User {
   careerGoal: string;
   github: string;
   linkedin: string;
+  profilePhoto: string;
 }
 
 const Profile = () => {
@@ -21,6 +22,9 @@ const Profile = () => {
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [photoError, setPhotoError] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -48,6 +52,61 @@ const Profile = () => {
 
     fetchProfile();
   }, []);
+
+  const handlePhotoChange = async (
+  event: React.ChangeEvent<HTMLInputElement>
+) => {
+  const file = event.target.files?.[0];
+  event.target.value = '';
+
+  if (!file) return;
+
+  if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+    setPhotoError('Choose a JPG, PNG, or WebP image.');
+    return;
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+    setPhotoError('Image must be 5 MB or smaller.');
+    return;
+  }
+
+  try {
+    setUploadingPhoto(true);
+    setPhotoError('');
+
+    const formData = new FormData();
+    formData.append('photo', file);
+
+    const token = localStorage.getItem('token');
+
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_URL}/api/profile/photo`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const updatedUser = {
+      ...user!,
+      profilePhoto: response.data.profilePhoto,
+    };
+
+    setUser(updatedUser);
+    setOriginalUser(updatedUser);
+
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+  } catch (error) {
+    console.error('Photo upload failed:', error);
+    setPhotoError('Could not upload your photo. Please try again.');
+  } finally {
+    setUploadingPhoto(false);
+  }
+}; 
+
 
   const handleSave = async () => {
     if (!user) return;
@@ -143,8 +202,34 @@ const Profile = () => {
 
         <div className="profile-identity">
           <div className="profile-avatar">
-            {initials || '?'}
-          </div>
+  {user.profilePhoto ? (
+    <img src={user.profilePhoto} alt="Profile" />
+  ) : (
+    initials || '?'
+  )}
+</div>
+
+<input
+  ref={fileInputRef}
+  type="file"
+  accept="image/jpeg,image/png,image/webp"
+  hidden
+  onChange={handlePhotoChange}
+/>
+
+<button
+  type="button"
+  onClick={() => fileInputRef.current?.click()}
+  disabled={uploadingPhoto}
+>
+  {uploadingPhoto ? 'Uploading...' : 'Change Photo'}
+</button>
+
+{photoError && (
+  <p className="profile-error" role="alert">
+    {photoError}
+  </p>
+)}
 
           <div className="profile-identity-info">
             <h2>{user.name || 'Your Name'}</h2>

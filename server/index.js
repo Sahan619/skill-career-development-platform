@@ -8,10 +8,31 @@ const Skill = require('./models/Skill');
 const Progress = require('./models/Progress');
 const CareerPath = require('./models/CareerPath');
 const Project = require('./models/Project');
+const multer = require('multer');
+const cloudinary = require('cloudinary').v2;
 
 
 const connectDB = require('./config/db');
 const User = require('./models/User');
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 5 * 1024 * 1024,
+  },
+  fileFilter: (req, file, callback) => {
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.mimetype)) {
+      return callback(new Error('Only JPG, PNG, and WebP images are allowed.'));
+    }
+
+    callback(null, true);
+  },
+});
 
 
 const app = express();
@@ -213,6 +234,63 @@ app.put('/api/profile', authMiddleware, async (req, res) => {
     });
   }
 });
+
+app.post(
+  '/api/profile/photo',
+  authMiddleware,
+  upload.single('photo'),
+  async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({
+          message: 'Please select an image.',
+        });
+      }
+
+      const user = await User.findById(req.userId);
+
+      if (!user) {
+        return res.status(404).json({
+          message: 'User not found.',
+        });
+      }
+
+      const imageUrl = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          {
+            folder: 'skill-career-platform/profile-photos',
+            public_id: `user_${user._id}`,
+            overwrite: true,
+            transformation: [
+              { width: 500, height: 500, crop: 'fill', gravity: 'face' },
+            ],
+          },
+          (error, result) => {
+            if (error) return reject(error);
+            if (!result) return reject(new Error('Image upload failed.'));
+            resolve(result.secure_url);
+          }
+        );
+
+        stream.end(req.file.buffer);
+      });
+
+      user.profilePhoto = imageUrl;
+      await user.save();
+
+      res.json({
+        message: 'Profile photo updated successfully.',
+        profilePhoto: user.profilePhoto,
+      });
+    } catch (error) {
+      console.error('Profile photo upload failed:', error);
+
+      res.status(500).json({
+        message: 'Could not upload profile photo.',
+      });
+    }
+  }
+);
 
 app.post('/api/skills', authMiddleware, async (req, res) => {
   try {
