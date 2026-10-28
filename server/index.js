@@ -10,7 +10,13 @@ const CareerPath = require('./models/CareerPath');
 const Project = require('./models/Project');
 const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
+const { GoogleGenAI } = require('@google/genai');
 
+
+
+const ai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY,
+});
 
 const connectDB = require('./config/db');
 const User = require('./models/User');
@@ -551,6 +557,126 @@ app.get('/api/career-paths', authMiddleware, async (req, res) => {
   }
 });
 
+
+app.post(
+  '/api/career-paths/recommendations',
+  authMiddleware,
+  async (req, res) => {
+    try {
+      if (!process.env.GEMINI_API_KEY) {
+        return res.status(500).json({
+          message: 'Gemini API key is not configured.',
+        });
+      }
+
+      const user = await User.findById(req.userId).select(
+        'degree careerGoal'
+      );
+
+      if (!user) {
+        return res.status(404).json({
+          message: 'User not found.',
+        });
+      }
+
+      const skills = await Skill.find({
+        user: req.userId,
+      }).select('name category level');
+
+      if (!user.degree) {
+        return res.status(400).json({
+          message: 'Please add your degree to your profile first.',
+        });
+      }
+
+      if (skills.length === 0) {
+        return res.status(400).json({
+          message: 'Please add some skills before requesting recommendations.',
+        });
+      }
+
+      const prompt = `
+You are a career guidance assistant.
+
+Recommend 3 to 5 realistic career paths for this student.
+
+Student degree: ${user.degree}
+Career goal: ${user.careerGoal || 'Not specified'}
+Skills: ${JSON.stringify(
+        skills.map(({ name, category, level }) => ({
+          name,
+          category,
+          level,
+        }))
+      )}
+
+Requirements:
+- Consider both the degree and the student's actual skills.
+- Include different suitable career options where appropriate.
+- Do not claim the student is already qualified for a job merely
+  because they have a few related skills.
+- Explain why each career is relevant.
+- Identify matching skills and skills they should develop next.
+- Return exactly 3 to 5 options.
+`;
+
+      const response = await ai.models.generateContent({
+        model: 'gemini-3.8-flash',
+        contents: prompt,
+        config: {
+          responseMimeType: 'application/json',
+          responseSchema: {
+            type: 'ARRAY',
+            items: {
+              type: 'OBJECT',
+              properties: {
+                title: { type: 'STRING' },
+                description: { type: 'STRING' },
+                reasons: {
+                  type: 'ARRAY',
+                  items: { type: 'STRING' },
+                },
+                matchingSkills: {
+                  type: 'ARRAY',
+                  items: { type: 'STRING' },
+                },
+                skillsToLearn: {
+                  type: 'ARRAY',
+                  items: { type: 'STRING' },
+                },
+              },
+              required: [
+                'title',
+                'description',
+                'reasons',
+                'matchingSkills',
+                'skillsToLearn',
+              ],
+            },
+          },
+        },
+      });
+
+      const recommendations = JSON.parse(response.text || '[]');
+
+      if (
+        !Array.isArray(recommendations) ||
+        recommendations.length < 3 ||
+        recommendations.length > 5
+      ) {
+        throw new Error('Invalid recommendation response from Gemini.');
+      }
+
+      res.json({ recommendations });
+    } catch (error) {
+      console.error('Career recommendations failed:', error.message);
+
+      res.status(502).json({
+        message: 'Could not generate career recommendations. Please try again.',
+      });
+    }
+  }
+);
 
 // GET PROJECTS
 app.get('/api/projects', authMiddleware, async (req, res) => {
