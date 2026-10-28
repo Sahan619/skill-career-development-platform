@@ -3,27 +3,190 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import './Skills.css';
 
+const degreeSkills: Record<string, Record<string, string[]>> = {
+  'Computer Engineering': {
+    Programming: [
+      'C Programming',
+      'C++',
+      'Java',
+      'Python',
+      'Go',
+      'JavaScript',
+      'TypeScript',
+    ],
+    'Computer Science': [
+      'Data Structures & Algorithms',
+      'Object-Oriented Programming',
+      'Operating Systems',
+      'Computer Networks',
+      'Database Management',
+      'Computer Architecture',
+    ],
+    'Software Development': [
+      'Web Development',
+      'React',
+      'Node.js',
+      'REST API Development',
+      'Software Engineering',
+      'Git & GitHub',
+      'Docker',
+      'DevOps',
+      'Cloud Computing',
+      'Cybersecurity',
+    ],
+    'Hardware & AI': [
+      'Digital Logic Design',
+      'Verilog HDL',
+      'Embedded Systems',
+      'Microprocessors',
+      'Machine Learning',
+      'PCB Design',
+    ],
+  },
+
+  'Civil Engineering': {
+    'Design & Drawing': [
+      'AutoCAD',
+      'Civil 3D',
+      'Revit',
+      'Building Information Modeling (BIM)',
+    ],
+    Engineering: [
+      'Structural Analysis',
+      'Geotechnical Engineering',
+      'Transportation Engineering',
+      'Hydraulics',
+      'Surveying',
+      'Concrete Technology',
+      'Building Materials',
+    ],
+    Construction: [
+      'Construction Management',
+      'Estimation & Costing',
+      'Project Management',
+      'Quantity Surveying',
+    ],
+  },
+
+  'Mechanical Engineering': {
+    'Core Engineering': [
+      'Engineering Mechanics',
+      'Thermodynamics',
+      'Fluid Mechanics',
+      'Heat Transfer',
+      'Machine Design',
+      'Manufacturing Processes',
+    ],
+    'Design & Simulation': [
+      'SolidWorks',
+      'AutoCAD',
+      'CATIA',
+      'Finite Element Analysis',
+      'Computational Fluid Dynamics',
+    ],
+    'Automation & Systems': [
+      'Robotics',
+      'Mechatronics',
+      'CNC Machining',
+      'HVAC Design',
+      'MATLAB',
+    ],
+  },
+
+  'Electrical Engineering': {
+    'Core Engineering': [
+      'Circuit Analysis',
+      'Electrical Machines',
+      'Power Systems',
+      'Power Electronics',
+      'Control Systems',
+      'Signal Processing',
+      'Instrumentation',
+    ],
+    'Software & Design': [
+      'MATLAB',
+      'PLC Programming',
+      'AutoCAD Electrical',
+      'Embedded Systems',
+      'PCB Design',
+    ],
+    'Energy & Automation': [
+      'Renewable Energy',
+      'Electrical Installation',
+      'Industrial Automation',
+    ],
+  },
+
+  'Business & Commerce': {
+    Accounting: [
+      'Financial Accounting',
+      'Management Accounting',
+      'Auditing',
+      'Taxation',
+      'Financial Reporting',
+    ],
+    Management: [
+      'Human Resource Management',
+      'Project Management',
+      'Supply Chain Management',
+      'Operations Management',
+      'Strategic Management',
+    ],
+    'Business & Finance': [
+      'Business Economics',
+      'Business Statistics',
+      'Financial Management',
+      'Business Law',
+      'Entrepreneurship',
+      'Business Communication',
+    ],
+    'Digital & Analytical Skills': [
+      'Microsoft Excel',
+      'Data Analysis',
+      'Digital Marketing',
+      'Marketing',
+      'Power BI',
+    ],
+  },
+};
+
+type Level = 'Beginner' | 'Intermediate' | 'Advanced';
+
 interface Skill {
   _id: string;
   name: string;
   category: string;
-  level: 'Beginner' | 'Intermediate' | 'Advanced';
+  level: Level;
 }
+
+const degrees = Object.keys(degreeSkills);
+
+const getCategory = (degree: string, skillName: string) =>
+  Object.entries(degreeSkills[degree] || {}).find(([, names]) =>
+    names.includes(skillName)
+  )?.[0] || '';
 
 const Skills = () => {
   const [skills, setSkills] = useState<Skill[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const [name, setName] = useState('');
+  const [degree, setDegree] = useState(degrees[0]);
   const [category, setCategory] = useState('');
-  const [level, setLevel] =
-    useState<Skill['level']>('Beginner');
+  const [name, setName] = useState('');
+  const [level, setLevel] = useState<Level>('Beginner');
 
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [editDegree, setEditDegree] = useState(degrees[0]);
   const [editName, setEditName] = useState('');
   const [editCategory, setEditCategory] = useState('');
-  const [editLevel, setEditLevel] =
-    useState<Skill['level']>('Beginner');
+  const [editLevel, setEditLevel] = useState<Level>('Beginner');
+
+  const categories = Object.keys(degreeSkills[degree] || {});
+  const availableSkills = degreeSkills[degree]?.[category] || [];
+
+  const editCategories = Object.keys(degreeSkills[editDegree] || {});
+  const editAvailableSkills =
+    degreeSkills[editDegree]?.[editCategory] || [];
 
   useEffect(() => {
     const loadSkills = async () => {
@@ -33,9 +196,7 @@ const Skills = () => {
         const response = await axios.get(
           `${import.meta.env.VITE_API_URL}/api/skills`,
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
           }
         );
 
@@ -51,8 +212,8 @@ const Skills = () => {
   }, []);
 
   const handleAddSkill = async () => {
-    if (!name.trim() || !category.trim()) {
-      alert('Please enter both skill name and category.');
+    if (!degree || !category || !name) {
+      alert('Please select a degree, category, and skill.');
       return;
     }
 
@@ -61,25 +222,16 @@ const Skills = () => {
 
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/skills`,
+        { name, category, level },
         {
-          name: name.trim(),
-          category: category.trim(),
-          level,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
 
-      setSkills((currentSkills) => [
-        response.data.skill,
-        ...currentSkills,
-      ]);
+      setSkills((current) => [response.data.skill, ...current]);
 
-      setName('');
       setCategory('');
+      setName('');
       setLevel('Beginner');
     } catch (error) {
       console.error('Failed to add skill:', error);
@@ -88,15 +240,22 @@ const Skills = () => {
   };
 
   const startEditing = (skill: Skill) => {
+    const matchingDegree =
+      degrees.find((item) => getCategory(item, skill.name)) ||
+      degrees[0];
+
+    const matchingCategory = getCategory(matchingDegree, skill.name);
+
     setEditingId(skill._id);
+    setEditDegree(matchingDegree);
+    setEditCategory(matchingCategory);
     setEditName(skill.name);
-    setEditCategory(skill.category);
     setEditLevel(skill.level);
   };
 
   const handleEditSkill = async (id: string) => {
-    if (!editName.trim() || !editCategory.trim()) {
-      alert('Please enter both skill name and category.');
+    if (!editDegree || !editCategory || !editName) {
+      alert('Please select a degree, category, and skill.');
       return;
     }
 
@@ -106,19 +265,17 @@ const Skills = () => {
       const response = await axios.put(
         `${import.meta.env.VITE_API_URL}/api/skills/${id}`,
         {
-          name: editName.trim(),
-          category: editCategory.trim(),
+          name: editName,
+          category: editCategory,
           level: editLevel,
         },
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
 
-      setSkills((currentSkills) =>
-        currentSkills.map((skill) =>
+      setSkills((current) =>
+        current.map((skill) =>
           skill._id === id ? response.data.skill : skill
         )
       );
@@ -131,11 +288,9 @@ const Skills = () => {
   };
 
   const handleDeleteSkill = async (id: string) => {
-    const confirmed = window.confirm(
-      'Are you sure you want to delete this skill?'
-    );
-
-    if (!confirmed) return;
+    if (!window.confirm('Are you sure you want to delete this skill?')) {
+      return;
+    }
 
     try {
       const token = localStorage.getItem('token');
@@ -143,14 +298,12 @@ const Skills = () => {
       await axios.delete(
         `${import.meta.env.VITE_API_URL}/api/skills/${id}`,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
 
-      setSkills((currentSkills) =>
-        currentSkills.filter((skill) => skill._id !== id)
+      setSkills((current) =>
+        current.filter((skill) => skill._id !== id)
       );
     } catch (error) {
       console.error('Failed to delete skill:', error);
@@ -168,7 +321,7 @@ const Skills = () => {
         <div>
           <p className="skills-eyebrow">YOUR DEVELOPMENT</p>
           <h1>My Skills</h1>
-          <p>Track your technical abilities and keep growing.</p>
+          <p>Track your skills and keep growing.</p>
         </div>
 
         <div className="skills-count">
@@ -180,30 +333,57 @@ const Skills = () => {
       <section className="skills-panel">
         <h2>Add a Skill</h2>
         <p className="skills-panel-description">
-          Record a skill you are learning or already know.
+          Select your degree and choose a relevant skill.
         </p>
 
         <div className="skills-form">
           <div className="skills-form-field">
-            <label htmlFor="skill-name">Skill name</label>
-            <input
-              id="skill-name"
-              type="text"
-              placeholder="e.g. Python"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
+            <label htmlFor="skill-degree">Degree / Discipline</label>
+            <select
+              id="skill-degree"
+              value={degree}
+              onChange={(e) => {
+                setDegree(e.target.value);
+                setCategory('');
+                setName('');
+              }}
+            >
+              {degrees.map((item) => (
+                <option key={item} value={item}>{item}</option>
+              ))}
+            </select>
           </div>
 
           <div className="skills-form-field">
-            <label htmlFor="skill-category">Category</label>
-            <input
+            <label htmlFor="skill-category">Skill category</label>
+            <select
               id="skill-category"
-              type="text"
-              placeholder="e.g. Programming"
               value={category}
-              onChange={(e) => setCategory(e.target.value)}
-            />
+              onChange={(e) => {
+                setCategory(e.target.value);
+                setName('');
+              }}
+            >
+              <option value="">Choose a category</option>
+              {categories.map((item) => (
+                <option key={item} value={item}>{item}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="skills-form-field">
+            <label htmlFor="skill-name">Skill</label>
+            <select
+              id="skill-name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              disabled={!category}
+            >
+              <option value="">Choose a skill</option>
+              {availableSkills.map((item) => (
+                <option key={item} value={item}>{item}</option>
+              ))}
+            </select>
           </div>
 
           <div className="skills-form-field">
@@ -211,9 +391,7 @@ const Skills = () => {
             <select
               id="skill-level"
               value={level}
-              onChange={(e) =>
-                setLevel(e.target.value as Skill['level'])
-              }
+              onChange={(e) => setLevel(e.target.value as Level)}
             >
               <option value="Beginner">Beginner</option>
               <option value="Intermediate">Intermediate</option>
@@ -249,23 +427,57 @@ const Skills = () => {
                   <div className="skill-edit-form">
                     <h3>Edit Skill</h3>
 
-                    <label htmlFor={`edit-name-${skill._id}`}>
-                      Skill name
+                    <label htmlFor={`edit-degree-${skill._id}`}>
+                      Degree / Discipline
                     </label>
-                    <input
-                      id={`edit-name-${skill._id}`}
-                      value={editName}
-                      onChange={(e) => setEditName(e.target.value)}
-                    />
+                    <select
+                      id={`edit-degree-${skill._id}`}
+                      value={editDegree}
+                      onChange={(e) => {
+                        setEditDegree(e.target.value);
+                        setEditCategory('');
+                        setEditName('');
+                      }}
+                    >
+                      {degrees.map((item) => (
+                        <option key={item} value={item}>{item}</option>
+                      ))}
+                    </select>
 
                     <label htmlFor={`edit-category-${skill._id}`}>
                       Category
                     </label>
-                    <input
+                    <select
                       id={`edit-category-${skill._id}`}
                       value={editCategory}
-                      onChange={(e) => setEditCategory(e.target.value)}
-                    />
+                      onChange={(e) => {
+                        setEditCategory(e.target.value);
+                        setEditName('');
+                      }}
+                    >
+                      <option value="">Choose a category</option>
+                      {editCategories.map((item) => (
+                        <option key={item} value={item}>{item}</option>
+                      ))}
+                    </select>
+
+                    <label htmlFor={`edit-name-${skill._id}`}>
+                      Skill
+                    </label>
+                    <select
+                      id={`edit-name-${skill._id}`}
+                      value={editName}
+                      onChange={(e) => setEditName(e.target.value)}
+                      disabled={!editCategory}
+                    >
+                      <option value="">Choose a skill</option>
+                      {editAvailableSkills.map((item) => (
+                        <option key={item} value={item}>{item}</option>
+                      ))}
+                      {editName && !editAvailableSkills.includes(editName) && (
+                        <option value={editName}>{editName} (existing)</option>
+                      )}
+                    </select>
 
                     <label htmlFor={`edit-level-${skill._id}`}>
                       Level
@@ -273,9 +485,7 @@ const Skills = () => {
                     <select
                       id={`edit-level-${skill._id}`}
                       value={editLevel}
-                      onChange={(e) =>
-                        setEditLevel(e.target.value as Skill['level'])
-                      }
+                      onChange={(e) => setEditLevel(e.target.value as Level)}
                     >
                       <option value="Beginner">Beginner</option>
                       <option value="Intermediate">Intermediate</option>
@@ -289,7 +499,6 @@ const Skills = () => {
                       >
                         Save Changes
                       </button>
-
                       <button
                         className="skills-secondary-button"
                         onClick={() => setEditingId(null)}
@@ -304,7 +513,6 @@ const Skills = () => {
                       <div className="skill-icon">
                         {skill.name.charAt(0).toUpperCase()}
                       </div>
-
                       <span
                         className={`skill-level skill-level-${skill.level.toLowerCase()}`}
                       >
@@ -322,7 +530,6 @@ const Skills = () => {
                       >
                         Edit
                       </button>
-
                       <button
                         className="skills-delete-button"
                         onClick={() => handleDeleteSkill(skill._id)}
