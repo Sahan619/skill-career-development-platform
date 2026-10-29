@@ -111,7 +111,7 @@ CLOUDINARY_API_KEY=your_cloudinary_api_key
 CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 ```
 
-Replace the example values with your own credentials. If your backend uses different environment variable names, use the names expected by your code.
+Replace the example values with your own credentials. `MONGODB_URI` is the preferred MongoDB variable. The backend also accepts `MONGO_URI` as a legacy fallback.
 
 Start the backend:
 

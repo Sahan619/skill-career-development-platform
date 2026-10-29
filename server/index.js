@@ -55,13 +55,19 @@ app.post('/api/auth/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    if (!email || !password) {
+    if (typeof email !== 'string' || !email.trim() || !password) {
       return res.status(400).json({
         message: 'Email and password are required',
       });
     }
 
-    const user = await User.findOne({ email });
+    const normalizedEmail = email.trim().toLowerCase();
+    const user = await User.findOne({
+      email: normalizedEmail,
+    }).collation({
+      locale: 'en',
+      strength: 2,
+    });
 
     if (!user) {
       return res.status(401).json({
@@ -103,11 +109,13 @@ app.post('/api/auth/register', async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    if (!name || !email || !password) {
+    if (!name || typeof email !== 'string' || !email.trim() || !password) {
       return res.status(400).json({
         message: 'All fields are required',
       });
     }
+
+    const normalizedEmail = email.trim().toLowerCase();
 
     const strongPassword =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d\s])\S{8,}$/;
@@ -119,7 +127,12 @@ app.post('/api/auth/register', async (req, res) => {
       });
     }
 
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({
+      email: normalizedEmail,
+    }).collation({
+      locale: 'en',
+      strength: 2,
+    });
 
     if (existingUser) {
       return res.status(409).json({
@@ -131,7 +144,7 @@ app.post('/api/auth/register', async (req, res) => {
 
     const user = await User.create({
       name,
-      email,
+      email: normalizedEmail,
       password: hashedPassword,
     });
 
