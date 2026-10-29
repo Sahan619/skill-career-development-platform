@@ -1,3 +1,4 @@
+
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
@@ -11,15 +12,13 @@ const Project = require('./models/Project');
 const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
 const { GoogleGenAI } = require('@google/genai');
-
-
+const connectDB = require('./config/db');
+const User = require('./models/User');
 
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
 });
 
-const connectDB = require('./config/db');
-const User = require('./models/User');
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -40,7 +39,6 @@ const upload = multer({
   },
 });
 
-
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -52,18 +50,17 @@ app.get('/', (req, res) => {
   res.send('Skill and Career Development API is running');
 });
 
+// LOGIN
 app.post('/api/auth/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Check required fields
     if (!email || !password) {
       return res.status(400).json({
         message: 'Email and password are required',
       });
     }
 
-    // Find user by email
     const user = await User.findOne({ email });
 
     if (!user) {
@@ -72,11 +69,7 @@ app.post('/api/auth/login', async (req, res) => {
       });
     }
 
-    // Compare entered password with hashed password
-    const isPasswordCorrect = await bcrypt.compare(
-      password,
-      user.password
-    );
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
     if (!isPasswordCorrect) {
       return res.status(401).json({
@@ -84,18 +77,12 @@ app.post('/api/auth/login', async (req, res) => {
       });
     }
 
-    // Create JWT token
     const token = jwt.sign(
-      {
-        userId: user._id,
-      },
+      { userId: user._id },
       process.env.JWT_SECRET,
-      {
-        expiresIn: '1d',
-      }
+      { expiresIn: '1d' }
     );
 
-    // Send successful response
     res.json({
       message: 'Login successful',
       token,
@@ -107,13 +94,11 @@ app.post('/api/auth/login', async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-
-    res.status(500).json({
-      message: 'Server error',
-    });
+    res.status(500).json({ message: 'Server error' });
   }
 });
-// This id=s for Registration
+
+// REGISTER
 app.post('/api/auth/register', async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -123,17 +108,16 @@ app.post('/api/auth/register', async (req, res) => {
         message: 'All fields are required',
       });
     }
-    
-const strongPassword =
-  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d\s])\S{8,}$/;
 
-if (!strongPassword.test(password)) {
-  return res.status(400).json({
-    message:
-      'Password must be at least 8 characters and include uppercase, lowercase, a number, and a special character.',
-  });
-}
+    const strongPassword =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d\s])\S{8,}$/;
 
+    if (!strongPassword.test(password)) {
+      return res.status(400).json({
+        message:
+          'Password must be at least 8 characters and include uppercase, lowercase, a number, and a special character.',
+      });
+    }
 
     const existingUser = await User.findOne({ email });
 
@@ -161,33 +145,27 @@ if (!strongPassword.test(password)) {
     });
   } catch (error) {
     console.error(error);
-
-    res.status(500).json({
-      message: 'Server error',
-    });
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
+// GET PROFILE
 app.get('/api/profile', authMiddleware, async (req, res) => {
   try {
     const user = await User.findById(req.userId).select('-password');
 
     if (!user) {
-      return res.status(404).json({
-        message: 'User not found',
-      });
+      return res.status(404).json({ message: 'User not found' });
     }
 
     res.json(user);
   } catch (error) {
     console.error(error);
-
-    res.status(500).json({
-      message: 'Server error',
-    });
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
+// UPDATE PROFILE
 app.put('/api/profile', authMiddleware, async (req, res) => {
   try {
     const {
@@ -203,9 +181,7 @@ app.put('/api/profile', authMiddleware, async (req, res) => {
     const user = await User.findById(req.userId);
 
     if (!user) {
-      return res.status(404).json({
-        message: 'User not found',
-      });
+      return res.status(404).json({ message: 'User not found' });
     }
 
     user.name = name;
@@ -234,13 +210,11 @@ app.put('/api/profile', authMiddleware, async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-
-    res.status(500).json({
-      message: 'Server error',
-    });
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
+// UPLOAD PROFILE PHOTO
 app.post(
   '/api/profile/photo',
   authMiddleware,
@@ -256,9 +230,7 @@ app.post(
       const user = await User.findById(req.userId);
 
       if (!user) {
-        return res.status(404).json({
-          message: 'User not found.',
-        });
+        return res.status(404).json({ message: 'User not found.' });
       }
 
       const imageUrl = await new Promise((resolve, reject) => {
@@ -290,7 +262,6 @@ app.post(
       });
     } catch (error) {
       console.error('Profile photo upload failed:', error);
-
       res.status(500).json({
         message: 'Could not upload profile photo.',
       });
@@ -298,6 +269,7 @@ app.post(
   }
 );
 
+// CREATE SKILL
 app.post('/api/skills', authMiddleware, async (req, res) => {
   try {
     const { name, category, level } = req.body;
@@ -321,13 +293,11 @@ app.post('/api/skills', authMiddleware, async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-
-    res.status(500).json({
-      message: 'Server error',
-    });
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
+// GET SKILLS
 app.get('/api/skills', authMiddleware, async (req, res) => {
   try {
     const skills = await Skill.find({
@@ -337,13 +307,11 @@ app.get('/api/skills', authMiddleware, async (req, res) => {
     res.json(skills);
   } catch (error) {
     console.error(error);
-
-    res.status(500).json({
-      message: 'Server error',
-    });
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
+// UPDATE SKILL
 app.put('/api/skills/:id', authMiddleware, async (req, res) => {
   try {
     const { name, category, level } = req.body;
@@ -354,9 +322,7 @@ app.put('/api/skills/:id', authMiddleware, async (req, res) => {
     });
 
     if (!skill) {
-      return res.status(404).json({
-        message: 'Skill not found',
-      });
+      return res.status(404).json({ message: 'Skill not found' });
     }
 
     skill.name = name;
@@ -371,13 +337,11 @@ app.put('/api/skills/:id', authMiddleware, async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-
-    res.status(500).json({
-      message: 'Server error',
-    });
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
+// DELETE SKILL
 app.delete('/api/skills/:id', authMiddleware, async (req, res) => {
   try {
     const skill = await Skill.findOneAndDelete({
@@ -386,20 +350,13 @@ app.delete('/api/skills/:id', authMiddleware, async (req, res) => {
     });
 
     if (!skill) {
-      return res.status(404).json({
-        message: 'Skill not found',
-      });
+      return res.status(404).json({ message: 'Skill not found' });
     }
 
-    res.json({
-      message: 'Skill deleted successfully',
-    });
+    res.json({ message: 'Skill deleted successfully' });
   } catch (error) {
     console.error(error);
-
-    res.status(500).json({
-      message: 'Server error',
-    });
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
@@ -426,9 +383,7 @@ app.post('/api/progress', authMiddleware, async (req, res) => {
     });
 
     if (!skill) {
-      return res.status(404).json({
-        message: 'Skill not found',
-      });
+      return res.status(404).json({ message: 'Skill not found' });
     }
 
     const existingProgress = await Progress.findOne({
@@ -451,13 +406,9 @@ app.post('/api/progress', authMiddleware, async (req, res) => {
     res.status(201).json(newProgress);
   } catch (error) {
     console.error(error);
-
-    res.status(500).json({
-      message: 'Server error',
-    });
+    res.status(500).json({ message: 'Server error' });
   }
 });
-
 
 // GET PROGRESS
 app.get('/api/progress', authMiddleware, async (req, res) => {
@@ -471,13 +422,9 @@ app.get('/api/progress', authMiddleware, async (req, res) => {
     res.json(progress);
   } catch (error) {
     console.error(error);
-
-    res.status(500).json({
-      message: 'Server error',
-    });
+    res.status(500).json({ message: 'Server error' });
   }
 });
-
 
 // UPDATE PROGRESS
 app.put('/api/progress/:id', authMiddleware, async (req, res) => {
@@ -496,25 +443,18 @@ app.put('/api/progress/:id', authMiddleware, async (req, res) => {
     });
 
     if (!existingProgress) {
-      return res.status(404).json({
-        message: 'Progress not found',
-      });
+      return res.status(404).json({ message: 'Progress not found' });
     }
 
     existingProgress.progress = progress;
-
     await existingProgress.save();
 
     res.json(existingProgress);
   } catch (error) {
     console.error(error);
-
-    res.status(500).json({
-      message: 'Server error',
-    });
+    res.status(500).json({ message: 'Server error' });
   }
 });
-
 
 // DELETE PROGRESS
 app.delete('/api/progress/:id', authMiddleware, async (req, res) => {
@@ -525,39 +465,28 @@ app.delete('/api/progress/:id', authMiddleware, async (req, res) => {
     });
 
     if (!progress) {
-      return res.status(404).json({
-        message: 'Progress not found',
-      });
+      return res.status(404).json({ message: 'Progress not found' });
     }
 
-    res.json({
-      message: 'Progress deleted successfully',
-    });
+    res.json({ message: 'Progress deleted successfully' });
   } catch (error) {
     console.error(error);
-
-    res.status(500).json({
-      message: 'Server error',
-    });
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
 // GET CAREER PATHS
-
 app.get('/api/career-paths', authMiddleware, async (req, res) => {
   try {
     const careerPaths = await CareerPath.find();
     res.json(careerPaths);
   } catch (error) {
     console.error(error);
-
-    res.status(500).json({
-      message: 'Server error',
-    });
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
-
+// GENERATE CAREER RECOMMENDATIONS
 app.post(
   '/api/career-paths/recommendations',
   authMiddleware,
@@ -574,9 +503,7 @@ app.post(
       );
 
       if (!user) {
-        return res.status(404).json({
-          message: 'User not found.',
-        });
+        return res.status(404).json({ message: 'User not found.' });
       }
 
       const skills = await Skill.find({
@@ -670,7 +597,6 @@ Requirements:
       res.json({ recommendations });
     } catch (error) {
       console.error('Career recommendations failed:', error.message);
-
       res.status(502).json({
         message: 'Could not generate career recommendations. Please try again.',
       });
@@ -678,24 +604,7 @@ Requirements:
   }
 );
 
-// GET PROJECTS
-app.get('/api/projects', authMiddleware, async (req, res) => {
-  try {
-    const projects = await Project.find({
-      user: req.userId,
-    }).sort({ createdAt: -1 });
-
-    res.json(projects);
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      message: 'Server error',
-    });
-  }
-});
-
-// Save the selected career for the logged-in user
+// SAVE SELECTED CAREER
 app.put('/api/career-paths/selected', authMiddleware, async (req, res) => {
   try {
     const { title, description, skills } = req.body;
@@ -733,7 +642,7 @@ app.put('/api/career-paths/selected', authMiddleware, async (req, res) => {
   }
 });
 
-// Retrieve the logged-in user's selected career
+// GET SELECTED CAREER
 app.get('/api/career-paths/selected', authMiddleware, async (req, res) => {
   try {
     const user = await User.findById(req.userId).select('selectedCareer');
@@ -746,6 +655,120 @@ app.get('/api/career-paths/selected', authMiddleware, async (req, res) => {
   } catch (error) {
     console.error('Failed to load selected career:', error.message);
     res.status(500).json({ message: 'Could not load selected career.' });
+  }
+});
+
+// NEW: GENERATE ROADMAP LEARNING RESOURCES
+app.post('/api/roadmap/resources', authMiddleware, async (req, res) => {
+  try {
+    if (!process.env.GEMINI_API_KEY) {
+      return res.status(500).json({
+        message: 'Gemini API key is not configured.',
+      });
+    }
+
+    const { careerTitle, careerDescription = '', skill } = req.body;
+
+    if (
+      typeof careerTitle !== 'string' ||
+      !careerTitle.trim() ||
+      typeof skill !== 'string' ||
+      !skill.trim()
+    ) {
+      return res.status(400).json({
+        message: 'Career title and skill are required.',
+      });
+    }
+
+    const prompt = `
+You are a practical technical learning advisor.
+
+Create a learning plan for the following roadmap step.
+
+Target career: ${careerTitle.trim()}
+Career description: ${String(careerDescription).slice(0, 1000)}
+Skill to learn: ${skill.trim()}
+
+Return useful, beginner-friendly learning resources suitable for a university student.
+
+Requirements:
+- Recommend 2 to 4 relevant online courses or learning resources.
+- Recommend 1 to 3 relevant reference books where suitable.
+- Prefer reputable providers, official documentation, and well-known publishers.
+- Include the title, provider or publisher, URL, and a short description for each resource.
+- Only provide URLs you believe are real and relevant. If you are unsure of a URL, use an empty string instead of inventing one.
+- Estimate a realistic amount of learning time.
+- Give one practical task the student can complete to practise the skill.
+- Keep the recommendations specific to the skill and target career.
+`;
+
+    const resourceItemSchema = {
+      type: 'OBJECT',
+      properties: {
+        title: { type: 'STRING' },
+        provider: { type: 'STRING' },
+        url: { type: 'STRING' },
+        description: { type: 'STRING' },
+      },
+      required: ['title', 'provider', 'url', 'description'],
+    };
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-3.8-flash',
+      contents: prompt,
+      config: {
+        responseMimeType: 'application/json',
+        responseSchema: {
+          type: 'OBJECT',
+          properties: {
+            courses: {
+              type: 'ARRAY',
+              items: resourceItemSchema,
+            },
+            books: {
+              type: 'ARRAY',
+              items: resourceItemSchema,
+            },
+            duration: { type: 'STRING' },
+            practicalTask: { type: 'STRING' },
+          },
+          required: ['courses', 'books', 'duration', 'practicalTask'],
+        },
+      },
+    });
+
+    const resources = JSON.parse(response.text || '{}');
+
+    if (
+      !Array.isArray(resources.courses) ||
+      !Array.isArray(resources.books) ||
+      typeof resources.duration !== 'string' ||
+      typeof resources.practicalTask !== 'string'
+    ) {
+      throw new Error('Invalid learning resources response from Gemini.');
+    }
+
+    res.json({ resources });
+  } catch (error) {
+    console.error('Roadmap resource generation failed:', error.message);
+
+    res.status(502).json({
+      message: 'Could not generate learning resources. Please try again.',
+    });
+  }
+});
+
+// GET PROJECTS
+app.get('/api/projects', authMiddleware, async (req, res) => {
+  try {
+    const projects = await Project.find({
+      user: req.userId,
+    }).sort({ createdAt: -1 });
+
+    res.json(projects);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
@@ -778,16 +801,11 @@ app.post('/api/projects', authMiddleware, async (req, res) => {
     res.status(201).json(project);
   } catch (error) {
     console.error(error);
-
-    res.status(500).json({
-      message: 'Server error',
-    });
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
-// UPDATE PROJECT
-
- // UPLOAD PROJECT IMAGE
+// UPLOAD PROJECT IMAGE
 app.post(
   '/api/projects/:id/image',
   authMiddleware,
@@ -806,9 +824,7 @@ app.post(
       });
 
       if (!project) {
-        return res.status(404).json({
-          message: 'Project not found.',
-        });
+        return res.status(404).json({ message: 'Project not found.' });
       }
 
       const imageUrl = await new Promise((resolve, reject) => {
@@ -821,10 +837,7 @@ app.post(
           },
           (error, result) => {
             if (error) return reject(error);
-            if (!result) {
-              return reject(new Error('Image upload failed.'));
-            }
-
+            if (!result) return reject(new Error('Image upload failed.'));
             resolve(result.secure_url);
           }
         );
@@ -842,7 +855,6 @@ app.post(
       });
     } catch (error) {
       console.error('Project image upload failed:', error);
-
       res.status(500).json({
         message: 'Could not upload project image.',
       });
@@ -859,20 +871,13 @@ app.delete('/api/projects/:id', authMiddleware, async (req, res) => {
     });
 
     if (!project) {
-      return res.status(404).json({
-        message: 'Project not found',
-      });
+      return res.status(404).json({ message: 'Project not found' });
     }
 
-    res.json({
-      message: 'Project deleted successfully',
-    });
+    res.json({ message: 'Project deleted successfully' });
   } catch (error) {
     console.error(error);
-
-    res.status(500).json({
-      message: 'Server error',
-    });
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
