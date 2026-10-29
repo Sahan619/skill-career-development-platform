@@ -416,6 +416,8 @@ app.post('/api/progress', authMiddleware, async (req, res) => {
       progress,
     });
 
+    await newProgress.populate('skill', 'name category level');
+
     res.status(201).json(newProgress);
   } catch (error) {
     console.error(error);
