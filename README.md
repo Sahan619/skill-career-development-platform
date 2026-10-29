@@ -2,6 +2,20 @@
 
 A full-stack web application that helps users manage their skills, track professional development, explore career paths, and build a professional portfolio.
 
+## Live Demo
+
+- **Live Demo:** [https://skill-career-platform.onrender.com/](https://skill-career-platform.onrender.com/)
+- **GitHub Repository:** [https://github.com/Sahan619/skill-career-development-platform.git](https://github.com/Sahan619/skill-career-development-platform.git)
+
+## Screenshots
+
+No application screenshots are currently included in the repository. Capture and save the following pages in `docs/screenshots/`, then add them here:
+
+- Login page: `docs/screenshots/login.png`
+- Main dashboard: `docs/screenshots/dashboard.png`
+- Skills or progress tracking page: `docs/screenshots/skills-progress.png`
+- Career roadmap or portfolio page: `docs/screenshots/roadmap-portfolio.png`
+
 ## Overview
 
 The Skill & Career Development Platform brings skill management, career planning, progress tracking, and portfolio building into one place. It also integrates Gemini AI to generate personalized career recommendations and learning resources.
@@ -103,7 +117,7 @@ Create a `.env` file inside the `server` directory and configure the required en
 
 ```env
 PORT=5000
-MONGODB_URI=your_mongodb_connection_string
+MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
 GEMINI_API_KEY=your_gemini_api_key
 CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
