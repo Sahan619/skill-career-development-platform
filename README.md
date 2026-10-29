@@ -125,7 +125,7 @@ CLOUDINARY_API_KEY=your_cloudinary_api_key
 CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 ```
 
-Replace the example values with your own credentials. `MONGODB_URI` is the preferred MongoDB variable. The backend also accepts `MONGO_URI` as a legacy fallback.
+Replace the example values with your own credentials. Set `MONGO_URI` to your MongoDB connection string.
 
 Start the backend:
 
@@ -163,7 +163,7 @@ Open the local URL printed by Vite in your terminal.
 | Variable | Purpose |
 |---|---|
 | `PORT` | Backend server port |
-| `MONGODB_URI` | MongoDB connection string |
+| `MONGO_URI` | MongoDB connection string |
 | `JWT_SECRET` | Secret used to sign authentication tokens |
 | `GEMINI_API_KEY` | Access to Gemini AI services |
 | `CLOUDINARY_CLOUD_NAME` | Cloudinary account identifier |
