@@ -13,6 +13,7 @@ interface User {
   github: string;
   linkedin: string;
   profilePhoto: string;
+  
 }
 
 const Profile = () => {

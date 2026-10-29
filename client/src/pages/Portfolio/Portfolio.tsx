@@ -13,6 +13,7 @@ interface Profile {
   careerGoal: string;
   github: string;
   linkedin: string;
+  profilePhoto: string;
 }
 
 interface Skill {
@@ -29,6 +30,7 @@ interface Project {
   technologies: string[];
   github: string;
   liveDemo: string;
+  imageUrl?: string;
 }
 
 const Portfolio = () => {
@@ -118,7 +120,16 @@ const Portfolio = () => {
         <div className="portfolio-banner" />
 
         <div className="portfolio-profile">
-          <div className="portfolio-avatar">{initials || '?'}</div>
+          <div className="portfolio-avatar">
+  {profile.profilePhoto ? (
+    <img
+      src={profile.profilePhoto}
+      alt={`${profile.name}'s profile`}
+    />
+  ) : (
+    initials || '?'
+  )}
+</div>
 
           <div className="portfolio-intro">
             <h2>{profile.name || 'Your Name'}</h2>
@@ -214,6 +225,61 @@ const Portfolio = () => {
           </p>
         ) : (
           <div className="portfolio-projects">
+            <div className="portfolio-projects">
+  {projects.map((project) => (
+    <article className="portfolio-project" key={project._id}>
+      {project.imageUrl && (
+        <img
+          className="project-image"
+          src={project.imageUrl}
+          alt={`${project.title} screenshot`}
+          loading="lazy"
+        />
+      )}
+
+      <div className="portfolio-project-icon" aria-hidden="true">
+        {'</>'}
+      </div>
+
+      <h3>{project.title}</h3>
+
+      <p className="portfolio-project-description">
+        {project.description || 'No description provided.'}
+      </p>
+
+      {project.technologies.length > 0 && (
+        <div className="portfolio-technologies">
+          {project.technologies.map((technology) => (
+            <span key={technology}>{technology}</span>
+          ))}
+        </div>
+      )}
+
+      <div className="portfolio-project-links">
+        {project.github && (
+          <a
+            href={project.github}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            GitHub ↗
+          </a>
+        )}
+
+        {project.liveDemo && (
+          <a
+            href={project.liveDemo}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Live Demo ↗
+          </a>
+        )}
+      </div>
+    </article>
+  ))}
+</div>
+            
             {projects.map((project) => (
               <article className="portfolio-project" key={project._id}>
                 <div className="portfolio-project-icon" aria-hidden="true">

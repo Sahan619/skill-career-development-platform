@@ -9,6 +9,7 @@ interface Project {
   technologies: string[];
   github: string;
   liveDemo: string;
+  imageUrl?: string;
 }
 
 const Projects = () => {

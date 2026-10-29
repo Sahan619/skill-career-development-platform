@@ -786,44 +786,70 @@ app.post('/api/projects', authMiddleware, async (req, res) => {
 });
 
 // UPDATE PROJECT
-app.put('/api/projects/:id', authMiddleware, async (req, res) => {
-  try {
-    const {
-      title,
-      description,
-      technologies,
-      github,
-      liveDemo,
-    } = req.body;
 
-    const project = await Project.findOne({
-      _id: req.params.id,
-      user: req.userId,
-    });
+ // UPLOAD PROJECT IMAGE
+app.post(
+  '/api/projects/:id/image',
+  authMiddleware,
+  upload.single('image'),
+  async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({
+          message: 'Please select an image.',
+        });
+      }
 
-    if (!project) {
-      return res.status(404).json({
-        message: 'Project not found',
+      const project = await Project.findOne({
+        _id: req.params.id,
+        user: req.userId,
+      });
+
+      if (!project) {
+        return res.status(404).json({
+          message: 'Project not found.',
+        });
+      }
+
+      const imageUrl = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          {
+            folder: 'skill-career-platform/project-images',
+            transformation: [
+              { width: 1200, height: 800, crop: 'limit' },
+            ],
+          },
+          (error, result) => {
+            if (error) return reject(error);
+            if (!result) {
+              return reject(new Error('Image upload failed.'));
+            }
+
+            resolve(result.secure_url);
+          }
+        );
+
+        stream.end(req.file.buffer);
+      });
+
+      project.imageUrl = imageUrl;
+      await project.save();
+
+      res.json({
+        message: 'Project image uploaded successfully.',
+        imageUrl: project.imageUrl,
+        project,
+      });
+    } catch (error) {
+      console.error('Project image upload failed:', error);
+
+      res.status(500).json({
+        message: 'Could not upload project image.',
       });
     }
-
-    project.title = title;
-    project.description = description;
-    project.technologies = technologies;
-    project.github = github;
-    project.liveDemo = liveDemo;
-
-    await project.save();
-
-    res.json(project);
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      message: 'Server error',
-    });
   }
-});
+);
+
 // DELETE PROJECT
 app.delete('/api/projects/:id', authMiddleware, async (req, res) => {
   try {

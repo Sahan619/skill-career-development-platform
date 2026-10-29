@@ -1,3 +1,4 @@
+
 const mongoose = require('mongoose');
 
 const projectSchema = new mongoose.Schema(
@@ -30,6 +31,11 @@ const projectSchema = new mongoose.Schema(
     },
 
     liveDemo: {
+      type: String,
+      default: '',
+    },
+
+    imageUrl: {
       type: String,
       default: '',
     },
