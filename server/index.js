@@ -695,6 +695,60 @@ app.get('/api/projects', authMiddleware, async (req, res) => {
   }
 });
 
+// Save the selected career for the logged-in user
+app.put('/api/career-paths/selected', authMiddleware, async (req, res) => {
+  try {
+    const { title, description, skills } = req.body;
+
+    if (
+      typeof title !== 'string' ||
+      !title.trim() ||
+      typeof description !== 'string' ||
+      !Array.isArray(skills) ||
+      !skills.every((skill) => typeof skill === 'string')
+    ) {
+      return res.status(400).json({ message: 'Invalid career details.' });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.userId,
+      {
+        selectedCareer: {
+          title: title.trim(),
+          description,
+          skills,
+        },
+      },
+      { new: true, runValidators: true }
+    ).select('selectedCareer');
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    res.json({ selectedCareer: user.selectedCareer });
+  } catch (error) {
+    console.error('Failed to save selected career:', error.message);
+    res.status(500).json({ message: 'Could not save selected career.' });
+  }
+});
+
+// Retrieve the logged-in user's selected career
+app.get('/api/career-paths/selected', authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.userId).select('selectedCareer');
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    res.json({ selectedCareer: user.selectedCareer });
+  } catch (error) {
+    console.error('Failed to load selected career:', error.message);
+    res.status(500).json({ message: 'Could not load selected career.' });
+  }
+});
+
 // CREATE PROJECT
 app.post('/api/projects', authMiddleware, async (req, res) => {
   try {

@@ -1,31 +1,113 @@
-import { useLocation, useNavigate } from 'react-router-dom';
+
 import { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './Roadmap.css';
 
 interface CareerPath {
   title: string;
+  description?: string;
   skills: string[];
 }
+
+interface RoadmapState {
+  careerPath: CareerPath | null;
+  completedSteps: string[];
+}
+
+const loadRoadmapProgress = (title: string): string[] => {
+  try {
+    const saved = localStorage.getItem(`roadmap-${title}`);
+    const parsed: unknown = saved ? JSON.parse(saved) : [];
+
+    return Array.isArray(parsed)
+      ? parsed.filter((step): step is string => typeof step === 'string')
+      : [];
+  } catch {
+    return [];
+  }
+};
 
 const Roadmap = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const careerPath = location.state as CareerPath | null;
-
-  const [completedSteps, setCompletedSteps] = useState<string[]>(() => {
-    if (!careerPath) return [];
-
-    try {
-      const savedSteps = localStorage.getItem(
-        `roadmap-${careerPath.title}`
-      );
-
-      return savedSteps ? JSON.parse(savedSteps) : [];
-    } catch {
-      return [];
-    }
+  const [roadmap, setRoadmap] = useState<RoadmapState>({
+    careerPath: (location.state as CareerPath | null) ?? null,
+    completedSteps: location.state
+      ? loadRoadmapProgress((location.state as CareerPath).title)
+      : [],
   });
+
+  const [loadingCareer, setLoadingCareer] = useState(!location.state);
+
+  const careerPath = roadmap.careerPath;
+  const completedSteps = roadmap.completedSteps;
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadSelectedCareer = async () => {
+      if (location.state) {
+        const selectedCareer = location.state as CareerPath;
+
+        if (!cancelled) {
+          setRoadmap({
+            careerPath: selectedCareer,
+            completedSteps: loadRoadmapProgress(selectedCareer.title),
+          });
+          setLoadingCareer(false);
+        }
+        return;
+      }
+
+      try {
+        const token = localStorage.getItem('token');
+
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/career-paths/selected`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const selectedCareer: CareerPath | null =
+          response.data.selectedCareer?.title
+            ? response.data.selectedCareer
+            : null;
+
+        if (!cancelled) {
+          setRoadmap({
+            careerPath: selectedCareer,
+            completedSteps: selectedCareer
+              ? loadRoadmapProgress(selectedCareer.title)
+              : [],
+          });
+        }
+      } catch (error) {
+        console.error('Failed to load selected career:', error);
+
+        if (!cancelled) {
+          setRoadmap({
+            careerPath: null,
+            completedSteps: [],
+          });
+        }
+      } finally {
+        if (!cancelled) {
+          setLoadingCareer(false);
+        }
+      }
+    };
+
+    loadSelectedCareer();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [location.state]);
 
   useEffect(() => {
     if (!careerPath) return;
@@ -36,12 +118,25 @@ const Roadmap = () => {
     );
   }, [completedSteps, careerPath]);
 
+  const toggleStep = (skill: string) => {
+    setRoadmap((current) => ({
+      ...current,
+      completedSteps: current.completedSteps.includes(skill)
+        ? current.completedSteps.filter((item) => item !== skill)
+        : [...current.completedSteps, skill],
+    }));
+  };
+
+  if (loadingCareer) {
+    return <p className="career-loading">Loading your roadmap...</p>;
+  }
+
   if (!careerPath) {
     return (
       <main className="roadmap-page">
         <section className="roadmap-empty-state">
           <h1>No career path selected</h1>
-          <p>Choose a career path first to view its learning roadmap.</p>
+          <p>Choose a career path first to view your learning roadmap.</p>
           <button onClick={() => navigate('/career-paths')}>
             Explore Career Paths
           </button>
@@ -52,18 +147,14 @@ const Roadmap = () => {
 
   const totalSteps = careerPath.skills.length;
 
+  const completedCount = careerPath.skills.filter((skill) =>
+    completedSteps.includes(skill)
+  ).length;
+
   const completionPercentage =
     totalSteps > 0
-      ? Math.round((completedSteps.length / totalSteps) * 100)
+      ? Math.round((completedCount / totalSteps) * 100)
       : 0;
-
-  const toggleStep = (skill: string) => {
-    setCompletedSteps((current) =>
-      current.includes(skill)
-        ? current.filter((item) => item !== skill)
-        : [...current, skill]
-    );
-  };
 
   return (
     <main className="roadmap-page">
@@ -77,7 +168,9 @@ const Roadmap = () => {
       <header className="roadmap-header">
         <p className="roadmap-eyebrow">YOUR LEARNING JOURNEY</p>
         <h1>{careerPath.title} Roadmap</h1>
-        <p>Build your skills one step at a time. Track each milestone as you go.</p>
+        <p>
+          Build your skills one step at a time. Track each milestone as you go.
+        </p>
       </header>
 
       <section className="roadmap-summary">
@@ -86,7 +179,6 @@ const Roadmap = () => {
             <h2>Your Progress</h2>
             <p>Keep going — every step counts.</p>
           </div>
-
           <strong className="roadmap-percentage">
             {completionPercentage}%
           </strong>
@@ -108,12 +200,12 @@ const Roadmap = () => {
 
         <div className="roadmap-summary-footer">
           <span>
-            {completedSteps.length} of {totalSteps} steps completed
+            {completedCount} of {totalSteps} steps completed
           </span>
           <span>
             {completionPercentage === 100
               ? 'All steps completed!'
-              : `${totalSteps - completedSteps.length} remaining`}
+              : `${totalSteps - completedCount} remaining`}
           </span>
         </div>
       </section>

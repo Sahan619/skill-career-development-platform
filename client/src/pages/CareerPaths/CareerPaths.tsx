@@ -80,7 +80,22 @@ const CareerPaths = () => {
     }
   };
 
-  const chooseCareer = (career: CareerRecommendation) => {
+  const chooseCareer = async (career: CareerRecommendation) => {
+  setError('');
+
+  try {
+    await axios.put(
+      `${import.meta.env.VITE_API_URL}/api/career-paths/selected`,
+      {
+        title: career.title,
+        description: career.description,
+        skills: career.skillsToLearn,
+      },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
     navigate('/roadmap', {
       state: {
         title: career.title,
@@ -88,7 +103,11 @@ const CareerPaths = () => {
         skills: career.skillsToLearn,
       },
     });
-  };
+  } catch (error) {
+    console.error('Failed to save selected career:', error);
+    setError('Could not save your career selection. Please try again.');
+  }
+};
 
   if (loading) {
     return <p className="career-loading">Loading career paths...</p>;
