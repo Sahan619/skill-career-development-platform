@@ -35,7 +35,9 @@
 
 .profile-banner {
   height: 130px;
-  background: linear-gradient(120deg, #4f46e5, #818cf8, #c4b5fd);
+  background:
+    radial-gradient(circle at 82% 18%, rgb(148 174 255 / 28%), transparent 32%),
+    linear-gradient(120deg, #101c35, #1b4d96 72%, #2864dc);
 }
 
 .profile-identity {
@@ -56,8 +58,8 @@
   margin-top: -36px;
   border: 5px solid var(--surface);
   border-radius: 50%;
-  background: #eef2ff;
-  color: #4338ca;
+  background: #eff5ff;
+  color: #245bc0;
   font-size: 27px;
   font-weight: 700;
 }
@@ -88,8 +90,9 @@
   display: inline-block;
   padding: 5px 10px;
   border-radius: 20px;
-  background: #eef2ff;
-  color: #4338ca;
+  border: 1px solid #dce8ff;
+  background: #eff5ff;
+  color: #245bc0;
   font-size: 12px;
   font-weight: 600;
 }
@@ -152,7 +155,7 @@
 }
 
 .profile-field input:disabled {
-  background: #f1f5f9;
+  background: #f3f6fb;
   color: var(--muted);
   cursor: not-allowed;
 }
@@ -165,12 +168,12 @@
 }
 
 .profile-cancel-button {
-  background: #e2e8f0;
-  color: #334155;
+  background: #e9eef6;
+  color: #31415b;
 }
 
 .profile-cancel-button:hover {
-  background: #cbd5e1;
+  background: #dce5f1;
 }
 
 .profile-message {

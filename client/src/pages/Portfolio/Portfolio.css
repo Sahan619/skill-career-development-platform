@@ -44,7 +44,9 @@
 
 .portfolio-banner {
   height: 150px;
-  background: linear-gradient(120deg, #312e81, #4f46e5, #a5b4fc);
+  background:
+    radial-gradient(circle at 82% 18%, rgb(148 174 255 / 28%), transparent 32%),
+    linear-gradient(120deg, #101c35, #1b4d96 72%, #2864dc);
 }
 
 .portfolio-profile {
@@ -64,8 +66,8 @@
   margin-top: -35px;
   border: 5px solid var(--surface);
   border-radius: 50%;
-  background: #eef2ff;
-  color: #4338ca;
+  background: #eff5ff;
+  color: #245bc0;
   font-size: 25px;
   font-weight: 800;
 }
@@ -118,7 +120,7 @@
   gap: 20px;
   padding: 22px 30px;
   border-top: 1px solid var(--border);
-  background: #fafaff;
+  background: #f8faff;
 }
 
 .portfolio-education div {
@@ -164,8 +166,8 @@
   flex-shrink: 0;
   padding: 6px 10px;
   border-radius: 20px;
-  background: #eef2ff;
-  color: #4338ca;
+  background: #eff5ff;
+  color: #245bc0;
   font-size: 12px;
   font-weight: 700;
 }
@@ -216,8 +218,8 @@
   flex-shrink: 0;
   padding: 5px 8px;
   border-radius: 6px;
-  background: #eef2ff;
-  color: #4338ca;
+  background: #eff5ff;
+  color: #245bc0;
   font-size: 11px;
   font-weight: 700;
 }
@@ -241,8 +243,8 @@
 }
 
 .portfolio-project:hover {
-  border-color: #c7d2fe;
-  box-shadow: 0 8px 22px rgb(79 70 229 / 7%);
+  border-color: #b7cdf4;
+  box-shadow: 0 10px 26px rgb(40 100 220 / 10%);
   transform: translateY(-2px);
 }
 
@@ -254,8 +256,8 @@
   height: 44px;
   margin-bottom: 16px;
   border-radius: 10px;
-  background: #eef2ff;
-  color: #4338ca;
+  background: #eff5ff;
+  color: #245bc0;
   font-size: 15px;
   font-weight: 800;
 }
@@ -284,8 +286,8 @@
 .portfolio-technologies span {
   padding: 5px 8px;
   border-radius: 6px;
-  background: #f1f5f9;
-  color: #475569;
+  background: #f0f4fa;
+  color: #42526b;
   font-size: 11px;
 }
 

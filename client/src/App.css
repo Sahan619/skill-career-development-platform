@@ -1,95 +1,68 @@
-
-/* Global reset */
-* {
-  box-sizing: border-box;
-}
-
-:root {
-  font-family: Inter, Arial, sans-serif;
-  color: #1e293b;
-  background: #f8fafc;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-
-  --primary: #4f46e5;
-  --primary-hover: #4338ca;
-  --text: #1e293b;
-  --muted: #64748b;
-  --border: #e2e8f0;
-  --surface: #ffffff;
-  --background: #f8fafc;
-}
-
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
-  background: var(--background);
-}
-
-button,
-input,
-textarea,
-select {
-  font: inherit;
-}
-
-button {
-  border: none;
-  border-radius: 8px;
-  padding: 10px 16px;
-  background: var(--primary);
-  color: white;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-button:hover {
-  background: var(--primary-hover);
-}
-
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-input,
-textarea,
-select {
+#root {
   width: 100%;
-  padding: 11px 12px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--surface);
-  color: var(--text);
-  outline: none;
+  min-height: 100vh;
+  margin: 0;
 }
 
-input:focus,
-textarea:focus,
-select:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgb(79 70 229 / 12%);
+.authenticated-main,
+.dashboard-page,
+.skills-page,
+.progress-page,
+.roadmap-page,
+.career-page,
+.projects-page,
+.portfolio-page,
+.profile-page {
+  min-width: 0;
 }
 
-a {
-  color: var(--primary);
+.dashboard-page h1,
+.skills-page h1,
+.progress-page h1,
+.roadmap-page h1,
+.career-page h1,
+.projects-page h1,
+.portfolio-page h1,
+.profile-page h1 {
+  color: #12213d;
+  font-weight: 750;
+  letter-spacing: -0.035em;
 }
 
-h1,
-h2,
-h3 {
-  color: var(--text);
-  line-height: 1.3;
+.dashboard-content-card,
+.dashboard-stat-card,
+.skills-panel,
+.skill-card,
+.skills-empty-state,
+.progress-overview,
+.progress-form-panel,
+.progress-card,
+.progress-empty-state,
+.roadmap-summary,
+.roadmap-step,
+.roadmap-empty-state,
+.career-count,
+.ai-career-section,
+.career-card,
+.career-empty-state,
+.projects-form-panel,
+.project-card,
+.projects-empty-state,
+.portfolio-header,
+.portfolio-section,
+.profile-card {
+  box-shadow: var(--shadow);
 }
 
-p {
-  line-height: 1.6;
-}
-
-::selection {
-  background: #c7d2fe;
-  color: #312e81;
+@media (max-width: 600px) {
+  .dashboard-page,
+  .skills-page,
+  .progress-page,
+  .roadmap-page,
+  .career-page,
+  .projects-page,
+  .portfolio-page,
+  .profile-page {
+    overflow-wrap: anywhere;
+  }
 }

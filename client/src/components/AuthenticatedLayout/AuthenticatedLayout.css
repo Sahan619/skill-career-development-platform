@@ -11,17 +11,22 @@
   height: 100vh;
   flex-shrink: 0;
   flex-direction: column;
-  gap: 28px;
+  gap: 30px;
   align-self: flex-start;
   padding: 28px 18px;
-  background: #172554;
+  border-right: 1px solid rgb(255 255 255 / 7%);
+  background: linear-gradient(180deg, #101c35 0%, #142544 100%);
   color: white;
+  box-shadow: 8px 0 30px rgb(16 28 53 / 8%);
 }
 
 .authenticated-brand {
   margin: 0;
   padding: 0 10px;
-  color: white;
+  color: #f8fbff;
+  font-size: 19px;
+  font-weight: 750;
+  letter-spacing: -0.035em;
 }
 
 .authenticated-nav {
@@ -32,26 +37,38 @@
 
 .authenticated-nav-link {
   padding: 10px 16px;
-  border-radius: 8px;
-  color: #dbeafe;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  color: #c4d1e6;
   text-align: left;
   text-decoration: none;
-  transition: background 0.2s ease;
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
 }
 
 .authenticated-nav-link:hover,
 .authenticated-nav-link-active {
-  background: #263b70;
-  color: white;
+  border-color: rgb(119 161 255 / 18%);
+  background: rgb(72 117 204 / 18%);
+  color: #ffffff;
+}
+
+.authenticated-nav-link:hover {
+  transform: translateX(2px);
 }
 
 .authenticated-logout {
   margin-top: auto;
-  background: #b91c1c;
+  border: 1px solid rgb(255 255 255 / 10%);
+  background: rgb(255 255 255 / 7%);
+  color: #e6edf8;
 }
 
 .authenticated-logout:hover {
-  background: #991b1b;
+  background: rgb(255 255 255 / 13%);
 }
 
 .authenticated-main {
@@ -70,6 +87,7 @@
     height: auto;
     gap: 12px;
     padding: 14px 18px;
+    box-shadow: 0 8px 24px rgb(16 28 53 / 12%);
   }
 
   .authenticated-nav {
@@ -83,6 +101,10 @@
   .authenticated-nav-link {
     flex: 0 0 auto;
     white-space: nowrap;
+  }
+
+  .authenticated-nav-link:hover {
+    transform: none;
   }
 
   .authenticated-logout {

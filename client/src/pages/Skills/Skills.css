@@ -38,7 +38,8 @@
   padding: 18px;
   border: 1px solid var(--border);
   border-radius: 12px;
-  background: white;
+  background: var(--surface);
+  box-shadow: var(--shadow);
 }
 
 .skills-count strong {
@@ -154,8 +155,9 @@
   width: 42px;
   height: 42px;
   border-radius: 12px;
-  background: #eef2ff;
-  color: #4338ca;
+  border: 1px solid #dce8ff;
+  background: #eff5ff;
+  color: #245bc0;
   font-size: 20px;
   font-weight: 700;
 }
@@ -202,21 +204,22 @@
 
 .skills-secondary-button {
   border: 1px solid var(--border);
-  background: white;
+  background: var(--surface);
   color: var(--text);
 }
 
 .skills-secondary-button:hover {
-  background: #f1f5f9;
+  border-color: #cbd8ec;
+  background: #f4f7fc;
 }
 
 .skills-delete-button {
-  background: #fee2e2;
-  color: #b91c1c;
+  background: #fff1f1;
+  color: #b42335;
 }
 
 .skills-delete-button:hover {
-  background: #fecaca;
+  background: #ffe2e2;
 }
 
 .skill-edit-form {

@@ -4,7 +4,7 @@
   margin: 0 auto;
   padding: 32px;
   box-sizing: border-box;
-  color: #172033;
+  color: var(--text);
 }
 
 .career-page-header {
@@ -48,10 +48,10 @@
   min-height: 104px;
   padding: 18px;
   box-sizing: border-box;
-  border: 1px solid #e4e7f0;
+  border: 1px solid var(--border);
   border-radius: 16px;
   background: #fff;
-  box-shadow: 0 4px 14px rgb(15 23 42 / 3%);
+  box-shadow: var(--shadow);
 }
 
 .career-count strong {
@@ -71,9 +71,12 @@
 .ai-career-section {
   margin-bottom: 48px;
   padding: 28px;
-  border: 1px solid #e0e5f5;
+  border: 1px solid #dfe7f5;
   border-radius: 20px;
-  background: linear-gradient(145deg, #f7f8ff 0%, #fff 75%);
+  background:
+    radial-gradient(ellipse at 92% 0%, rgb(118 100 232 / 8%), transparent 48%),
+    linear-gradient(145deg, #f7faff 0%, #ffffff 78%);
+  box-shadow: var(--shadow);
   box-sizing: border-box;
 }
 
@@ -95,6 +98,7 @@
   font-size: 24px;
   line-height: 1.35;
   letter-spacing: -0.4px;
+  color: #12213d;
 }
 
 .ai-career-header p:not(.career-eyebrow) {
@@ -114,7 +118,7 @@
   padding: 12px 18px;
   border: 1px solid transparent;
   border-radius: 10px;
-  background: var(--primary);
+  background: linear-gradient(110deg, #245bd0, #3478ed);
   color: #fff;
   font-size: 13px;
   font-weight: 700;
@@ -130,7 +134,7 @@
 .ai-generate-button:hover:not(:disabled) {
   filter: brightness(0.94);
   transform: translateY(-1px);
-  box-shadow: 0 5px 14px rgb(67 56 202 / 15%);
+  box-shadow: 0 7px 18px rgb(40 100 220 / 20%);
 }
 
 .ai-generate-button:disabled {
@@ -141,7 +145,7 @@
 .career-ai-hint {
   margin: 0;
   padding: 24px;
-  border: 1px dashed #d6dcef;
+  border: 1px dashed #cbd8ec;
   border-radius: 12px;
   background: rgb(255 255 255 / 75%);
   color: var(--muted);
@@ -183,10 +187,10 @@
   flex-direction: column;
   padding: 24px;
   box-sizing: border-box;
-  border: 1px solid #e5e7ef;
+  border: 1px solid var(--border);
   border-radius: 16px;
   background: #fff;
-  box-shadow: 0 3px 12px rgb(15 23 42 / 3%);
+  box-shadow: 0 8px 26px rgb(21 42 79 / 4%);
   transition:
     transform 0.2s ease,
     border-color 0.2s ease,
@@ -195,8 +199,8 @@
 
 .career-card:hover {
   transform: translateY(-3px);
-  border-color: #cbd2f6;
-  box-shadow: 0 12px 28px rgb(15 23 42 / 7%);
+  border-color: #b7cdf4;
+  box-shadow: 0 14px 30px rgb(21 42 79 / 9%);
 }
 
 .career-card-top {
@@ -215,8 +219,9 @@
   align-items: center;
   justify-content: center;
   border-radius: 13px;
-  background: #eef2ff;
-  color: #4338ca;
+  border: 1px solid #dce8ff;
+  background: #eff5ff;
+  color: #245bc0;
   font-size: 21px;
   font-weight: 800;
 }
@@ -231,7 +236,7 @@
 
 .career-card h2 {
   margin: 0 0 12px;
-  color: #172033;
+  color: #12213d;
   font-size: 21px;
   line-height: 1.4;
   overflow-wrap: anywhere;
@@ -251,7 +256,7 @@
 
 .career-skills-section h3 {
   margin: 0 0 12px;
-  color: #283348;
+  color: #31415b;
   font-size: 13px;
   font-weight: 750;
   line-height: 1.5;
@@ -269,10 +274,10 @@
   max-width: 100%;
   padding: 7px 10px;
   box-sizing: border-box;
-  border: 1px solid #e0e7ff;
+  border: 1px solid #dce8ff;
   border-radius: 8px;
-  background: #f5f7ff;
-  color: #4338ca;
+  background: #f0f6ff;
+  color: #245bc0;
   font-size: 12px;
   line-height: 1.45;
   overflow-wrap: anywhere;
@@ -313,7 +318,7 @@
   padding: 12px 16px;
   border: 1px solid transparent;
   border-radius: 9px;
-  background: var(--primary);
+  background: linear-gradient(110deg, #245bd0, #3478ed);
   color: #fff;
   font-size: 13px;
   font-weight: 700;
@@ -331,7 +336,7 @@
 
 .career-roadmap-button:focus-visible,
 .ai-generate-button:focus-visible {
-  outline: 3px solid #a5b4fc;
+  outline: 3px solid #91b6ff;
   outline-offset: 3px;
 }
 
@@ -365,9 +370,10 @@
 .career-empty-state {
   margin-top: 20px;
   padding: 40px 24px;
-  border: 1px solid #e5e7ef;
+  border: 1px solid var(--border);
   border-radius: 14px;
   background: #fff;
+  box-shadow: var(--shadow);
   text-align: center;
 }
 
