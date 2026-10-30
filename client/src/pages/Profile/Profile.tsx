@@ -204,7 +204,12 @@ const Profile = () => {
         <div className="profile-identity">
           <div className="profile-avatar">
   {user.profilePhoto ? (
-    <img src={user.profilePhoto} alt="Profile" />
+    <img
+      src={user.profilePhoto}
+      alt="Profile"
+      onLoad={(event) => event.currentTarget.classList.add('media-loaded')}
+      onError={(event) => event.currentTarget.classList.add('media-loaded')}
+    />
   ) : (
     initials || '?'
   )}

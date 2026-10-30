@@ -259,7 +259,7 @@ const Roadmap = () => {
         >
           <div
             className="roadmap-progress-fill"
-            style={{ width: `${completionPercentage}%` }}
+            style={{ transform: `scaleX(${completionPercentage / 100})` }}
           />
         </div>
 

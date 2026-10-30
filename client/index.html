@@ -4,6 +4,29 @@
     <meta charset="UTF-8" />
     <link rel="icon" href="/11.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#efeaff" />
+    <script>
+      let theme = 'light';
+      try {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'light' || savedTheme === 'dark') {
+          theme = savedTheme;
+        } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          theme = 'dark';
+        }
+      } catch {
+        try {
+          if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            theme = 'dark';
+          }
+        } catch {
+          // Use the light theme when the system preference is unavailable.
+        }
+      }
+      document.documentElement.dataset.theme = theme;
+      document.querySelector('meta[name="theme-color"]').content =
+        theme === 'dark' ? '#242238' : '#efeaff';
+    </script>
     <title>Skill & Career Development Platform</title>
   </head>
   <body>

@@ -145,7 +145,7 @@ const Progress = () => {
           <div className="progress-overview-track">
             <div
               className="progress-overview-fill"
-              style={{ width: `${averageProgress}%` }}
+              style={{ transform: `scaleX(${averageProgress / 100})` }}
             />
           </div>
         </div>
@@ -246,7 +246,7 @@ const Progress = () => {
                 >
                   <div
                     className="progress-card-fill"
-                    style={{ width: `${item.progress}%` }}
+                    style={{ transform: `scaleX(${item.progress / 100})` }}
                   />
                 </div>
 

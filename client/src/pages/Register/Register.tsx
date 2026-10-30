@@ -3,6 +3,7 @@ import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import './Register.css';
+import ThemeToggle from '../../components/ThemeToggle/ThemeToggle';
 
 const Register = () => {
   const [name, setName] = useState('');
@@ -73,6 +74,7 @@ async function handleSubmit(e: FormEvent) {
 
   return (
     <main className="register-container">
+      <ThemeToggle className="register-theme-toggle" />
       <section className="register-left">
         <div className="register-content">
           <Link to="/login" className="register-brand">

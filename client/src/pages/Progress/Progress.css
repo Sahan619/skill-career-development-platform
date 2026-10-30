@@ -57,15 +57,15 @@
   height: 9px;
   overflow: hidden;
   border-radius: 999px;
-  background: #e2e8f0;
+  background: var(--theme-surface-74d61cbc);
 }
 
 .progress-overview-fill,
 .progress-card-fill {
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, #2864dc, #7767e8);
-  transition: width 0.2s ease;
+  background: linear-gradient(90deg, var(--theme-surface-7c4586bd), var(--theme-surface-8e526230));
+  transition: transform 800ms ease-out;
 }
 
 .progress-form-panel,
@@ -73,7 +73,7 @@
 .progress-empty-state {
   border: 1px solid var(--border);
   border-radius: 14px;
-  background: white;
+  background: var(--theme-surface-c821531f);
 }
 
 .progress-form-panel {
@@ -108,7 +108,7 @@
 
 .progress-form-field label,
 .progress-slider-row label {
-  color: #475569;
+  color: var(--theme-text-4f2ca58d);
   font-size: 14px;
   font-weight: 600;
 }
@@ -130,9 +130,9 @@
 .progress-notice {
   padding: 14px;
   border-radius: 8px;
-  border: 1px solid #dce8ff;
-  background: #f0f6ff;
-  color: #234b8c;
+  border: 1px solid var(--theme-border-7d19c98b);
+  background: var(--theme-surface-6c70e2d5);
+  color: var(--theme-text-6ade7a38);
 }
 
 .progress-list-header {
@@ -174,7 +174,7 @@
 
 .progress-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgb(15 23 42 / 6%);
+  box-shadow: 0 8px 24px var(--theme-shadow-03e3a88d);
 }
 
 .progress-card-heading {
@@ -192,9 +192,9 @@
   height: 44px;
   flex-shrink: 0;
   border-radius: 12px;
-  border: 1px solid #dce8ff;
-  background: #eff5ff;
-  color: #245bc0;
+  border: 1px solid var(--theme-border-7d19c98b);
+  background: var(--theme-surface-06bd7b83);
+  color: var(--theme-text-168c5deb);
   font-size: 20px;
   font-weight: 700;
 }
@@ -249,12 +249,12 @@
 
 .progress-delete-button {
   padding: 8px 12px;
-  background: #fff1f1;
-  color: #b42335;
+  background: var(--theme-surface-d1456b96);
+  color: var(--theme-text-cdae9900);
 }
 
 .progress-delete-button:hover {
-  background: #ffe2e2;
+  background: var(--theme-surface-d017a82a);
 }
 
 .progress-empty-state {

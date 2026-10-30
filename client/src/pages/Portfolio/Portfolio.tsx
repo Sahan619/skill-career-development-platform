@@ -125,6 +125,8 @@ const Portfolio = () => {
     <img
       src={profile.profilePhoto}
       alt={`${profile.name}'s profile`}
+      onLoad={(event) => event.currentTarget.classList.add('media-loaded')}
+      onError={(event) => event.currentTarget.classList.add('media-loaded')}
     />
   ) : (
     initials || '?'
@@ -234,6 +236,8 @@ const Portfolio = () => {
           src={project.imageUrl}
           alt={`${project.title} screenshot`}
           loading="lazy"
+          onLoad={(event) => event.currentTarget.classList.add('media-loaded')}
+          onError={(event) => event.currentTarget.classList.add('media-loaded')}
         />
       )}
 

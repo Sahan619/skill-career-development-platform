@@ -12,7 +12,7 @@
 }
 
 .roadmap-back-button:hover {
-  background: #f1f5fb;
+  background: var(--theme-surface-0a5664f0);
 }
 
 .roadmap-header {
@@ -43,7 +43,7 @@
   margin-bottom: 36px;
   border: 1px solid var(--border);
   border-radius: 16px;
-  background: white;
+  background: var(--theme-surface-c821531f);
 }
 
 .roadmap-summary-top {
@@ -73,14 +73,14 @@
   height: 12px;
   overflow: hidden;
   border-radius: 999px;
-  background: #e8edf6;
+  background: var(--theme-surface-83a834ee);
 }
 
 .roadmap-progress-fill {
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, #2864dc, #7767e8);
-  transition: width 0.3s ease;
+  background: linear-gradient(90deg, var(--theme-surface-7c4586bd), var(--theme-surface-8e526230));
+  transition: transform 800ms ease-out;
 }
 
 .roadmap-summary-footer {
@@ -123,15 +123,16 @@
   padding: 22px;
   border: 1px solid var(--border);
   border-radius: 14px;
-  background: white;
+  background: var(--theme-surface-c821531f);
   transition:
-    border-color 0.2s ease,
-    background 0.2s ease;
+    background-color 150ms ease,
+    transform 260ms ease,
+    box-shadow 260ms ease;
 }
 
 .roadmap-step-completed {
-  border-color: #b7e5cd;
-  background: #f5fbf8;
+  border-color: var(--theme-border-38248cd1);
+  background: var(--theme-surface-45521445);
 }
 
 .roadmap-step-number {
@@ -142,16 +143,16 @@
   align-items: center;
   justify-content: center;
   border-radius: 12px;
-  border: 1px solid #dce8ff;
-  background: #eff5ff;
-  color: #245bc0;
+  border: 1px solid var(--theme-border-7d19c98b);
+  background: var(--theme-surface-06bd7b83);
+  color: var(--theme-text-168c5deb);
   font-size: 18px;
   font-weight: 700;
 }
 
 .roadmap-step-completed .roadmap-step-number {
-  background: #dcfce7;
-  color: #166534;
+  background: var(--theme-surface-926f2f03);
+  color: var(--theme-text-afb6d9a9);
 }
 
 .roadmap-step-content {
@@ -185,20 +186,20 @@
 }
 
 .roadmap-incomplete-button {
-  border: 1px solid #b7e5cd;
+  border: 1px solid var(--theme-border-38248cd1);
   background: var(--surface);
-  color: #166534;
+  color: var(--theme-text-afb6d9a9);
 }
 
 .roadmap-incomplete-button:hover {
-  background: #edf9f2;
+  background: var(--theme-surface-9815dd8c);
 }
 
 .roadmap-empty-state {
   padding: 40px 20px;
   border: 1px solid var(--border);
   border-radius: 14px;
-  background: white;
+  background: var(--theme-surface-c821531f);
   text-align: center;
 }
 

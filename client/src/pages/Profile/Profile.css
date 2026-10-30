@@ -30,14 +30,14 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 16px;
-  box-shadow: 0 4px 16px rgb(15 23 42 / 4%);
+  box-shadow: 0 4px 16px var(--theme-shadow-5edf2ddf);
 }
 
 .profile-banner {
   height: 130px;
   background:
-    radial-gradient(circle at 82% 18%, rgb(148 174 255 / 28%), transparent 32%),
-    linear-gradient(120deg, #101c35, #1b4d96 72%, #2864dc);
+    radial-gradient(circle at 82% 18%, var(--theme-surface-86234dcc), var(--theme-surface-4a8007e9) 32%),
+    linear-gradient(120deg, var(--theme-surface-c5fb0c25), var(--theme-surface-1a7b2596) 72%, var(--theme-surface-7c4586bd));
 }
 
 .profile-identity {
@@ -58,8 +58,8 @@
   margin-top: -36px;
   border: 5px solid var(--surface);
   border-radius: 50%;
-  background: #eff5ff;
-  color: #245bc0;
+  background: var(--theme-surface-06bd7b83);
+  color: var(--theme-text-168c5deb);
   font-size: 27px;
   font-weight: 700;
 }
@@ -90,9 +90,9 @@
   display: inline-block;
   padding: 5px 10px;
   border-radius: 20px;
-  border: 1px solid #dce8ff;
-  background: #eff5ff;
-  color: #245bc0;
+  border: 1px solid var(--theme-border-7d19c98b);
+  background: var(--theme-surface-06bd7b83);
+  color: var(--theme-text-168c5deb);
   font-size: 12px;
   font-weight: 600;
 }
@@ -121,7 +121,7 @@
   gap: 8px;
   min-width: 0;
   padding-bottom: 16px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--theme-border-269d559d);
 }
 
 .profile-detail span {
@@ -155,7 +155,7 @@
 }
 
 .profile-field input:disabled {
-  background: #f3f6fb;
+  background: var(--theme-surface-f7596c6b);
   color: var(--muted);
   cursor: not-allowed;
 }
@@ -168,12 +168,12 @@
 }
 
 .profile-cancel-button {
-  background: #e9eef6;
-  color: #31415b;
+  background: var(--theme-surface-1890d4d3);
+  color: var(--theme-text-0d4d3376);
 }
 
 .profile-cancel-button:hover {
-  background: #dce5f1;
+  background: var(--theme-surface-d2ac19b0);
 }
 
 .profile-message {
@@ -184,10 +184,10 @@
 .profile-error {
   margin: 0 0 20px;
   padding: 12px 16px;
-  border: 1px solid #fecaca;
+  border: 1px solid var(--theme-border-06b2009a);
   border-radius: 8px;
-  background: #fef2f2;
-  color: #b91c1c;
+  background: var(--theme-surface-251cea78);
+  color: var(--theme-text-8f41a2fb);
   overflow-wrap: anywhere;
 }
 

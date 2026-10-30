@@ -18,6 +18,10 @@ const Dashboard = () => {
   const [name, setName] = useState('');
   const [progressItems, setProgressItems] = useState<ProgressItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [displayedAverage, setDisplayedAverage] = useState(0);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(
+    () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  );
 
   useEffect(() => {
     const loadDashboard = async () => {
@@ -53,6 +57,37 @@ const Dashboard = () => {
           ) / progressItems.length
         )
       : 0;
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const updatePreference = () => setPrefersReducedMotion(mediaQuery.matches);
+
+    mediaQuery.addEventListener('change', updatePreference);
+    return () => mediaQuery.removeEventListener('change', updatePreference);
+  }, []);
+
+  useEffect(() => {
+    if (prefersReducedMotion) return;
+
+    const startTime = performance.now();
+    let frameId = 0;
+
+    const updateCount = (time: number) => {
+      const progress = Math.min((time - startTime) / 800, 1);
+      setDisplayedAverage(Math.round(averageProgress * progress));
+
+      if (progress < 1) {
+        frameId = requestAnimationFrame(updateCount);
+      }
+    };
+
+    frameId = requestAnimationFrame(updateCount);
+    return () => cancelAnimationFrame(frameId);
+  }, [averageProgress, prefersReducedMotion]);
+
+  const visibleAverage = prefersReducedMotion
+    ? averageProgress
+    : displayedAverage;
 
   if (loading) {
     return (
@@ -92,7 +127,7 @@ const Dashboard = () => {
 
           <article className="dashboard-stat-card">
             <span>Average Progress</span>
-            <strong>{averageProgress}%</strong>
+            <strong>{visibleAverage}%</strong>
             <p>Across your tracked skills</p>
           </article>
 
@@ -133,7 +168,7 @@ const Dashboard = () => {
                   <div className="dashboard-progress-track">
                     <div
                       className="dashboard-progress-fill"
-                      style={{ width: `${item.progress}%` }}
+                      style={{ transform: `scaleX(${item.progress / 100})` }}
                     />
                   </div>
                 </div>

@@ -24,7 +24,7 @@
 .projects-page h1,
 .portfolio-page h1,
 .profile-page h1 {
-  color: #12213d;
+  color: var(--theme-text-4128576d);
   font-weight: 750;
   letter-spacing: -0.035em;
 }

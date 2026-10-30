@@ -3,6 +3,7 @@ import './Login.css';
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import ThemeToggle from '../../components/ThemeToggle/ThemeToggle';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -69,6 +70,7 @@ const Login = () => {
 
   return (
     <main className="login-container">
+      <ThemeToggle className="login-theme-toggle" />
       <section className="login-left">
         <div className="login-content">
           <Link to="/login" className="login-brand">

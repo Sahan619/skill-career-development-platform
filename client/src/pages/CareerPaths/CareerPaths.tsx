@@ -158,7 +158,7 @@ const CareerPaths = () => {
         {error && <p className="career-error">{error}</p>}
 
         {generating && (
-          <p className="career-loading">
+          <p className="career-loading career-generation-status">
             AI is analyzing your degree and skills. This may take a moment...
           </p>
         )}

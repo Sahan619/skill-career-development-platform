@@ -57,7 +57,7 @@
 .projects-empty-state {
   border: 1px solid var(--border);
   border-radius: 14px;
-  background: white;
+  background: var(--theme-surface-c821531f);
 }
 
 .projects-form-panel {
@@ -89,7 +89,7 @@
 }
 
 .projects-field label {
-  color: #475569;
+  color: var(--theme-text-4f2ca58d);
   font-size: 14px;
   font-weight: 600;
 }
@@ -117,7 +117,7 @@
 }
 
 .projects-cancel-button:hover {
-  background: #f1f5fb;
+  background: var(--theme-surface-0a5664f0);
 }
 
 .projects-list-header {
@@ -155,7 +155,7 @@
 
 .project-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 10px 28px rgb(15 23 42 / 7%);
+  box-shadow: 0 10px 28px var(--theme-shadow-bf14b523);
 }
 
 .project-card-top {
@@ -174,15 +174,15 @@
   align-items: center;
   justify-content: center;
   border-radius: 13px;
-  border: 1px solid #dce8ff;
-  background: #eff5ff;
-  color: #245bc0;
+  border: 1px solid var(--theme-border-7d19c98b);
+  background: var(--theme-surface-06bd7b83);
+  color: var(--theme-text-168c5deb);
   font-size: 21px;
   font-weight: 700;
 }
 
 .project-number {
-  color: #94a3b8;
+  color: var(--theme-text-f018ae2e);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 1px;
@@ -221,10 +221,10 @@
 
 .project-tech-tag {
   padding: 6px 9px;
-  border: 1px solid #dce8ff;
+  border: 1px solid var(--theme-border-7d19c98b);
   border-radius: 7px;
-  background: #f0f6ff;
-  color: #245bc0;
+  background: var(--theme-surface-6c70e2d5);
+  color: var(--theme-text-168c5deb);
   font-size: 12px;
   overflow-wrap: anywhere;
 }
@@ -269,16 +269,16 @@
 }
 
 .project-edit-button:hover {
-  background: #f1f5fb;
+  background: var(--theme-surface-0a5664f0);
 }
 
 .project-delete-button {
-  background: #fff1f1;
-  color: #b42335;
+  background: var(--theme-surface-d1456b96);
+  color: var(--theme-text-cdae9900);
 }
 
 .project-delete-button:hover {
-  background: #ffe2e2;
+  background: var(--theme-surface-d017a82a);
 }
 
 .projects-empty-state {

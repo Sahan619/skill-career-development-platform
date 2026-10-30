@@ -1,5 +1,6 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import './AuthenticatedLayout.css';
+import ThemeToggle from '../ThemeToggle/ThemeToggle';
 
 const navigationItems = [
   { label: 'Dashboard', path: '/dashboard' },
@@ -42,6 +43,7 @@ const AuthenticatedLayout = () => {
           ))}
         </nav>
 
+        <ThemeToggle className="authenticated-theme-toggle" showLabel />
         <button className="authenticated-logout" onClick={handleLogout}>
           Log out
         </button>
