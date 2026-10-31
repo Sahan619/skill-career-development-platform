@@ -19,6 +19,55 @@ const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
 });
 
+const isGeminiModelUnavailable = (error) => {
+  const errorObject =
+    error && typeof error === 'object' ? error : {};
+  const nestedError =
+    errorObject.error && typeof errorObject.error === 'object'
+      ? errorObject.error
+      : {};
+  const status = errorObject.status ?? nestedError.status;
+  const code = errorObject.code ?? nestedError.code;
+  const message =
+    typeof errorObject.message === 'string'
+      ? errorObject.message
+      : typeof nestedError.message === 'string'
+        ? nestedError.message
+        : '';
+
+  return (
+    [status, code].some(
+      (value) =>
+        value === 503 ||
+        value === '503' ||
+        value === 'UNAVAILABLE'
+    ) || message.toLowerCase().includes('high demand')
+  );
+};
+
+const generateGeminiContent = async (contents, config) => {
+  try {
+    return await ai.models.generateContent({
+      model: 'gemini-3.8-flash',
+      contents,
+      config,
+    });
+  } catch (error) {
+    if (!isGeminiModelUnavailable(error)) {
+      throw error;
+    }
+
+    console.warn(
+      'Gemini 3.8 Flash is unavailable; retrying with Gemini 3.6 Flash.'
+    );
+    return ai.models.generateContent({
+      model: 'gemini-3.6-flash',
+      contents,
+      config,
+    });
+  }
+};
+
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -601,39 +650,35 @@ Requirements:
 `;
 
       failureStage = 'calling Gemini';
-      const response = await ai.models.generateContent({
-        model: 'gemini-3.8-flash',
-        contents: prompt,
-        config: {
-          responseMimeType: 'application/json',
-          responseSchema: {
-            type: 'ARRAY',
-            items: {
-              type: 'OBJECT',
-              properties: {
-                title: { type: 'STRING' },
-                description: { type: 'STRING' },
-                reasons: {
-                  type: 'ARRAY',
-                  items: { type: 'STRING' },
-                },
-                matchingSkills: {
-                  type: 'ARRAY',
-                  items: { type: 'STRING' },
-                },
-                skillsToLearn: {
-                  type: 'ARRAY',
-                  items: { type: 'STRING' },
-                },
+      const response = await generateGeminiContent(prompt, {
+        responseMimeType: 'application/json',
+        responseSchema: {
+          type: 'ARRAY',
+          items: {
+            type: 'OBJECT',
+            properties: {
+              title: { type: 'STRING' },
+              description: { type: 'STRING' },
+              reasons: {
+                type: 'ARRAY',
+                items: { type: 'STRING' },
               },
-              required: [
-                'title',
-                'description',
-                'reasons',
-                'matchingSkills',
-                'skillsToLearn',
-              ],
+              matchingSkills: {
+                type: 'ARRAY',
+                items: { type: 'STRING' },
+              },
+              skillsToLearn: {
+                type: 'ARRAY',
+                items: { type: 'STRING' },
+              },
             },
+            required: [
+              'title',
+              'description',
+              'reasons',
+              'matchingSkills',
+              'skillsToLearn',
+            ],
           },
         },
       });
@@ -778,27 +823,23 @@ Requirements:
       required: ['title', 'provider', 'url', 'description'],
     };
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-3.8-flash',
-      contents: prompt,
-      config: {
-        responseMimeType: 'application/json',
-        responseSchema: {
-          type: 'OBJECT',
-          properties: {
-            courses: {
-              type: 'ARRAY',
-              items: resourceItemSchema,
-            },
-            books: {
-              type: 'ARRAY',
-              items: resourceItemSchema,
-            },
-            duration: { type: 'STRING' },
-            practicalTask: { type: 'STRING' },
+    const response = await generateGeminiContent(prompt, {
+      responseMimeType: 'application/json',
+      responseSchema: {
+        type: 'OBJECT',
+        properties: {
+          courses: {
+            type: 'ARRAY',
+            items: resourceItemSchema,
           },
-          required: ['courses', 'books', 'duration', 'practicalTask'],
+          books: {
+            type: 'ARRAY',
+            items: resourceItemSchema,
+          },
+          duration: { type: 'STRING' },
+          practicalTask: { type: 'STRING' },
         },
+        required: ['courses', 'books', 'duration', 'practicalTask'],
       },
     });
 
