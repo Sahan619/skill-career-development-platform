@@ -46,6 +46,42 @@ connectDB();
 
 const PORT = process.env.PORT || 5000;
 
+const getSafeErrorDetails = (error) => {
+  const errorObject =
+    error && typeof error === 'object' ? error : {};
+  const secrets = [
+    process.env.GEMINI_API_KEY,
+    process.env.MONGO_URI,
+    process.env.JWT_SECRET,
+    process.env.CLOUDINARY_API_KEY,
+    process.env.CLOUDINARY_API_SECRET,
+  ].filter((secret) => typeof secret === 'string' && secret.length > 0);
+  let message =
+    error instanceof Error ? error.message : String(error);
+
+  for (const secret of secrets) {
+    message = message.split(secret).join('[REDACTED]');
+  }
+
+  return {
+    name:
+      typeof errorObject.name === 'string' ? errorObject.name : 'Error',
+    status:
+      typeof errorObject.status === 'number'
+        ? errorObject.status
+        : undefined,
+    code:
+      typeof errorObject.code === 'string' ||
+      typeof errorObject.code === 'number'
+        ? errorObject.code
+        : undefined,
+    message: message
+      .replace(/AIza[0-9A-Za-z_-]{20,}/g, '[REDACTED]')
+      .replace(/\bBearer\s+\S+/gi, 'Bearer [REDACTED]')
+      .slice(0, 1000),
+  };
+};
+
 app.get('/', (req, res) => {
   res.send('Skill and Career Development API is running');
 });
@@ -506,6 +542,8 @@ app.post(
   '/api/career-paths/recommendations',
   authMiddleware,
   async (req, res) => {
+    let failureStage = 'loading recommendation data';
+
     try {
       if (!process.env.GEMINI_API_KEY) {
         return res.status(500).json({
@@ -562,6 +600,7 @@ Requirements:
 - Return exactly 3 to 5 options.
 `;
 
+      failureStage = 'calling Gemini';
       const response = await ai.models.generateContent({
         model: 'gemini-3.8-flash',
         contents: prompt,
@@ -599,8 +638,16 @@ Requirements:
         },
       });
 
-      const recommendations = JSON.parse(response.text || '[]');
+      failureStage = 'parsing Gemini response';
+      const responseText = response.text;
 
+      if (typeof responseText !== 'string' || !responseText.trim()) {
+        throw new Error('Gemini returned an empty response.');
+      }
+
+      const recommendations = JSON.parse(responseText);
+
+      failureStage = 'validating Gemini response';
       if (
         !Array.isArray(recommendations) ||
         recommendations.length < 3 ||
@@ -611,7 +658,10 @@ Requirements:
 
       res.json({ recommendations });
     } catch (error) {
-      console.error('Career recommendations failed:', error.message);
+      console.error('Career recommendations failed:', {
+        stage: failureStage,
+        ...getSafeErrorDetails(error),
+      });
       res.status(502).json({
         message: 'Could not generate career recommendations. Please try again.',
       });
