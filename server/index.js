@@ -820,6 +820,85 @@ app.post('/api/projects', authMiddleware, async (req, res) => {
   }
 });
 
+// UPDATE PROJECT
+app.put('/api/projects/:id', authMiddleware, async (req, res) => {
+  try {
+    const projectId = req.params.id;
+    const updates = req.body;
+    const allowedFields = [
+      'title',
+      'description',
+      'technologies',
+      'github',
+      'liveDemo',
+      'imageUrl',
+    ];
+
+    if (!/^[a-f\d]{24}$/i.test(projectId)) {
+      return res.status(400).json({ message: 'Invalid project ID' });
+    }
+
+    if (
+      !updates ||
+      typeof updates !== 'object' ||
+      Array.isArray(updates) ||
+      Object.keys(updates).length === 0 ||
+      Object.keys(updates).some((field) => !allowedFields.includes(field))
+    ) {
+      return res.status(400).json({ message: 'Invalid project data' });
+    }
+
+    if (
+      Object.prototype.hasOwnProperty.call(updates, 'title') &&
+      (typeof updates.title !== 'string' || !updates.title.trim())
+    ) {
+      return res.status(400).json({
+        message: 'Project title must be a non-empty string',
+      });
+    }
+
+    for (const field of ['description', 'github', 'liveDemo', 'imageUrl']) {
+      if (
+        Object.prototype.hasOwnProperty.call(updates, field) &&
+        typeof updates[field] !== 'string'
+      ) {
+        return res.status(400).json({ message: `Invalid ${field}` });
+      }
+    }
+
+    if (
+      Object.prototype.hasOwnProperty.call(updates, 'technologies') &&
+      (!Array.isArray(updates.technologies) ||
+        updates.technologies.some(
+          (technology) => typeof technology !== 'string'
+        ))
+    ) {
+      return res.status(400).json({ message: 'Invalid technologies' });
+    }
+
+    const project = await Project.findOne({
+      _id: projectId,
+      user: req.userId,
+    });
+
+    if (!project) {
+      return res.status(404).json({ message: 'Project not found' });
+    }
+
+    for (const field of allowedFields) {
+      if (Object.prototype.hasOwnProperty.call(updates, field)) {
+        project[field] = updates[field];
+      }
+    }
+
+    await project.save();
+    res.json(project);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // UPLOAD PROJECT IMAGE
 app.post(
   '/api/projects/:id/image',
