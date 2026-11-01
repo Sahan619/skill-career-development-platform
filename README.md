@@ -12,9 +12,9 @@ A full-stack web application that helps users manage their skills, track profess
 
 
 - Login page: ![alt text](image.png)
-- Main dashboard: `docs/screenshots/dashboard.png`
-- Skills or progress tracking page: `docs/screenshots/skills-progress.png`
-- Career roadmap or portfolio page: `docs/screenshots/roadmap-portfolio.png`
+- Main dashboard: ![alt text](image-1.png)
+- Skills  page: ![alt text](image-2.png)
+- Career roadmap :![alt text](image-4.png) ![alt text](image-3.png)
 
 ## Overview
 
