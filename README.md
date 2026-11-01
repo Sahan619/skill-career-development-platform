@@ -9,9 +9,9 @@ A full-stack web application that helps users manage their skills, track profess
 
 ## Screenshots
 
-No application screenshots are currently included in the repository. Capture and save the following pages in `docs/screenshots/`, then add them here:
 
-- Login page: `docs/screenshots/login.png`
+
+- Login page: ![alt text](image.png)
 - Main dashboard: `docs/screenshots/dashboard.png`
 - Skills or progress tracking page: `docs/screenshots/skills-progress.png`
 - Career roadmap or portfolio page: `docs/screenshots/roadmap-portfolio.png`

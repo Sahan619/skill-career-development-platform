@@ -107,7 +107,7 @@ const CareerPaths = () => {
     console.error('Failed to save selected career:', error);
     setError('Could not save your career selection. Please try again.');
   }
-};
+};1
 
   if (loading) {
     return <p className="career-loading">Loading career paths...</p>;
